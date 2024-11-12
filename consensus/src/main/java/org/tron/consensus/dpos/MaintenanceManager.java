@@ -101,10 +101,10 @@ public class MaintenanceManager {
 
     Map<ByteString, Long> countWitness = countVote(votesStore);
     if (!countWitness.isEmpty()) {
-      List<ByteString> currentWits = consensusDelegate.getActiveWitnesses();
+      List<ByteString> currentWits = consensusDelegate.getActiveWitnesses(); // 当前有出块权的SR
 
       List<ByteString> newWitnessAddressList = new ArrayList<>();
-      consensusDelegate.getAllWitnesses()
+      consensusDelegate.getAllWitnesses() // 所有曾经出块的 SR
           .forEach(witnessCapsule -> newWitnessAddressList.add(witnessCapsule.getAddress()));
 
       countWitness.forEach((address, voteCount) -> {
@@ -161,7 +161,7 @@ public class MaintenanceManager {
 
   private Map<ByteString, Long> countVote(VotesStore votesStore) {
     final Map<ByteString, Long> countWitness = Maps.newHashMap();
-    Iterator<Entry<byte[], VotesCapsule>> dbIterator = votesStore.iterator();
+    Iterator<Entry<byte[], VotesCapsule>> dbIterator = votesStore.iterator(); // 从 SnapShotRoot的固化块中读取所有的投票信息
     long sizeCount = 0;
     while (dbIterator.hasNext()) {
       Entry<byte[], VotesCapsule> next = dbIterator.next();
@@ -191,6 +191,7 @@ public class MaintenanceManager {
     return countWitness;
   }
 
+  // 提案Remove the Power of the GR，创世区块的witness votecount消减一部分
   private void tryRemoveThePowerOfTheGr() {
     if (consensusDelegate.getRemoveThePowerOfTheGr() != 1) {
       return;

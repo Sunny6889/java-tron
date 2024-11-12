@@ -131,8 +131,8 @@ public class DelegationStore extends TronStoreWithRevoking<BytesCapsule> {
   }
 
   public void accumulateWitnessVi(long cycle, byte[] address, long voteCount) {
-    BigInteger preVi = getWitnessVi(cycle - 1, address);
-    long reward = getReward(cycle, address);
+    BigInteger preVi = getWitnessVi(cycle - 1, address); // 上一轮的投票数
+    long reward = getReward(cycle, address); // 获取 witness 的代理奖励
     if (reward == 0 || voteCount == 0) { // Just forward pre vi
       if (!BigInteger.ZERO.equals(preVi)) { // Zero vi will not be record
         setWitnessVi(cycle, address, preVi);
@@ -141,7 +141,7 @@ public class DelegationStore extends TronStoreWithRevoking<BytesCapsule> {
       BigInteger deltaVi = BigInteger.valueOf(reward)
           .multiply(DECIMAL_OF_VI_REWARD)
           .divide(BigInteger.valueOf(voteCount));
-      setWitnessVi(cycle, address, preVi.add(deltaVi));
+      setWitnessVi(cycle, address, preVi.add(deltaVi)); // 奖励除以票数，每票应该获取的奖励
     }
   }
 

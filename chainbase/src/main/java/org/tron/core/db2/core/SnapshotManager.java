@@ -47,7 +47,7 @@ import org.tron.core.store.CheckTmpStore;
 
 @Slf4j(topic = "DB")
 public class SnapshotManager implements RevokingDatabase {
-
+// SnapshotManager 通过 Session 管理快照链，新增节点、回滚、持久化等
   public static final int DEFAULT_MIN_FLUSH_COUNT = 1;
   private static final int DEFAULT_STACK_MAX_SIZE = 256;
   private static final long ONE_MINUTE_MILLS = 60*1000L;
@@ -168,6 +168,7 @@ public class SnapshotManager implements RevokingDatabase {
             "flush-service-" + revokingDB.getDbName())));
   }
 
+  // 生成 session 对象或调用
   private void advance() {
     dbs.forEach(db -> db.setHead(db.getHead().advance()));
     ++size;

@@ -101,6 +101,7 @@ public class DposTask {
           return State.NOT_TIME_YET;
         }
 
+        // 获取当前应该出块见证人SR
         ByteString pWitness = dposSlot.getScheduledWitness(slot);
 
         Miner miner = dposService.getMiners().get(pWitness);

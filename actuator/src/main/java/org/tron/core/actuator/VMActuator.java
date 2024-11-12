@@ -109,6 +109,7 @@ public class VMActuator implements Actuator2 {
         .divide(BigInteger.valueOf(callerEnergyTotal)).longValueExact();
   }
 
+  //validate: 负责验证交易的正确性
   @Override
   public void validate(Object object) throws ContractValidateException {
 

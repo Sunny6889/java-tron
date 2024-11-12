@@ -76,10 +76,12 @@ public class StateManager {
       return;
     }
 
+    // 检查是否是最新块
     if (System.currentTimeMillis() - blockCapsule.getTimeStamp() > BLOCK_PRODUCED_INTERVAL) {
       return;
     }
 
+    // 检查区块的记账人是否在记账人列表里面
     ByteString witness = blockCapsule.getWitnessAddress();
     if (!dposService.getMiners().containsKey(witness)) {
       return;
@@ -90,6 +92,7 @@ public class StateManager {
       return;
     }
 
+    // 如果旧的区块
     if (null != currentBlockId
         && currentBlockId.toString().compareTo(blockCapsule.getBlockId().toString()) > 0) {
       return;

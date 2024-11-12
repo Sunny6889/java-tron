@@ -13,7 +13,7 @@ import org.tron.core.capsule.BlockCapsule;
 public class Consensus {
 
   @Autowired
-  private DposService dposService;
+  private DposService dposService; // 实现周期性产块
 
   private ConsensusInterface consensusInterface;
 

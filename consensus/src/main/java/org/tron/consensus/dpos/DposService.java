@@ -149,7 +149,7 @@ public class DposService implements ConsensusInterface {
         .sorted()
         .collect(Collectors.toList());
     long size = consensusDelegate.getActiveWitnesses().size();
-    int position = (int) (size * (1 - SOLIDIFIED_THRESHOLD * 1.0 / 100));
+    int position = (int) (size * (1 - SOLIDIFIED_THRESHOLD * 1.0 / 100)); // 如果更改了MAX_ACTIVE_WITNESS_NUM计算公司还准确吗？
     long newSolidNum = numbers.get(position);
     long oldSolidNum = consensusDelegate.getLatestSolidifiedBlockNum();
     if (newSolidNum < oldSolidNum) {
