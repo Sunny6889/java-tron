@@ -77,7 +77,7 @@ public class PbftManager implements Closeable {
     executorService.submit(() -> {
       logger.info("receive pbft msg: {}", msg);
       switch (msg.getPbftMessage().getRawData().getMsgType()) {
-        case PREPREPARE:
+        case PREPREPARE: //prePrepare
           pbftMessageHandle.onPrePrepare(msg);
           break;
         case PREPARE:

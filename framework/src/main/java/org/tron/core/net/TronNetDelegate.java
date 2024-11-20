@@ -229,6 +229,7 @@ public class TronNetDelegate {
     }
   }
 
+  // 当收到节点的区块消息，或者是同步服务
   public void processBlock(BlockCapsule block, boolean isSync) throws P2pException {
     if (!hitDown && dbManager.getLatestSolidityNumShutDown() > 0
         && dbManager.getLatestSolidityNumShutDown() == dbManager.getDynamicPropertiesStore()

@@ -114,10 +114,11 @@ public class SnapshotImpl extends AbstractSnapshot<Key, Value> {
   @Override
   public Iterator<Map.Entry<byte[], byte[]>> iterator() {
     Map<WrappedByteArray, WrappedByteArray> all = new HashMap<>();
-    collect(all);
+    collect(all); // 获取所有非 root的值
     Set<WrappedByteArray> keys = new HashSet<>(all.keySet());
     all.entrySet()
         .removeIf(entry -> entry.getValue() == null || entry.getValue().getBytes() == null);
+    //过滤掉 root 里面没有的 key
     return Iterators.concat(
         Iterators.transform(all.entrySet().iterator(),
             e -> Maps.immutableEntry(e.getKey().getBytes(), e.getValue().getBytes())),

@@ -36,9 +36,11 @@ public class StatisticManager {
 
     long slot = 1;
     if (blockNum != 1) {
+      // 获取相对节点最高区块应该增加几个slot, 正常情况应该是1，如果大于1说明中间有因为产块失败跳过的slot
       slot = dposSlot.getSlot(blockTime);
     }
     for (int i = 1; i < slot; ++i) {
+      // 如果大于1把跳过的slot，设置成missed和unfilledblock
       byte[] witness = dposSlot.getScheduledWitness(i).toByteArray();
       wc = consensusDelegate.getWitness(witness);
       wc.setTotalMissed(wc.getTotalMissed() + 1);
@@ -49,6 +51,7 @@ public class StatisticManager {
       logger.info("Current block: {}, witness: {}, totalMissed: {}", blockNum,
           StringUtil.encode58Check(wc.getAddress()
               .toByteArray()), wc.getTotalMissed());
+      // 标记unfilledblock
       consensusDelegate.applyBlock(false);
     }
     consensusDelegate.applyBlock(true);

@@ -32,6 +32,7 @@ public class BlockHandleImpl implements BlockHandle {
 
   @Override
   public State getState() {
+    // 不是主节点
     if (!backupManager.getStatus().equals(BackupStatusEnum.MASTER)) {
       return State.BACKUP_IS_NOT_MASTER;
     }

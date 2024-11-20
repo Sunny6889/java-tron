@@ -703,9 +703,9 @@ public class Manager { //交易及区块校验并处理逻辑
   private void initAutoStop() {
     final long headNum = chainBaseManager.getHeadBlockNum();
     final long headTime = chainBaseManager.getHeadBlockTimeStamp();
-    final long exitHeight = CommonParameter.getInstance().getShutdownBlockHeight();
-    final long exitCount = CommonParameter.getInstance().getShutdownBlockCount();
-    final CronExpression blockTime = Args.getInstance().getShutdownBlockTime();
+    final long exitHeight = CommonParameter.getInstance().getShutdownBlockHeight(); // 初始-1
+    final long exitCount = CommonParameter.getInstance().getShutdownBlockCount();// 初始-1
+    final CronExpression blockTime = Args.getInstance().getShutdownBlockTime(); // null
 
     if (exitHeight > 0 && exitHeight < headNum) {
       throw new IllegalArgumentException(
@@ -997,7 +997,7 @@ public class Manager { //交易及区块校验并处理逻辑
           getDynamicPropertiesStore().getLatestBlockHeaderHash());
       logger.info("Start to erase block: {}.", oldHeadBlock);
       khaosDb.pop();
-      revokingStore.fastPop();
+      revokingStore.fastPop(); // SnapshotManager把所有的Chainbase回退一步
       logger.info("End to erase block: {}.", oldHeadBlock);
       oldHeadBlock.getTransactions().forEach(tc ->
           poppedTransactions.add(new TransactionCapsule(tc.getInstance())));
@@ -1097,6 +1097,7 @@ public class Manager { //交易及区块校验并处理逻辑
       throw e;
     }
 
+    // 回滚当下分支直到共同的区块节点
     if (CollectionUtils.isNotEmpty(binaryTree.getValue())) {
       while (!getDynamicPropertiesStore()
           .getLatestBlockHeaderHash()
@@ -1223,6 +1224,7 @@ public class Manager { //交易及区块校验并处理逻辑
         Metrics.histogramObserve(blockedTimer.get());
         blockedTimer.remove();
         long headerNumber = getDynamicPropertiesStore().getLatestBlockHeaderNumber();
+        // 如果发生切链，比当前节点小的区块，第一次检查该逻辑khaosDb不存在，下面逻辑会存放
         if (block.getNum() <= headerNumber && khaosDb.containBlockInMiniStore(block.getBlockId())) {
           logger.info("Block {} is already exist.", block.getBlockId().getString());
           return;

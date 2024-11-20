@@ -118,7 +118,7 @@ public class DposService implements ConsensusInterface {
     long timeStamp = blockCapsule.getTimeStamp();
     long bSlot = dposSlot.getAbSlot(timeStamp);
     long hSlot = dposSlot.getAbSlot(consensusDelegate.getLatestBlockHeaderTimestamp());
-    if (bSlot <= hSlot) {
+    if (bSlot <= hSlot) { //如果是比本地最新区块旧就抛弃
       logger.warn("ValidBlock failed: bSlot: {} <= hSlot: {}", bSlot, hSlot);
       return false;
     }
@@ -163,6 +163,7 @@ public class DposService implements ConsensusInterface {
   }
 
   public void updateWitness(List<ByteString> list) {
+    // 按照得票数，从高到低排序
     list.sort(Comparator.comparingLong((ByteString b) ->
         consensusDelegate.getWitness(b.toByteArray()).getVoteCount())
         .reversed()

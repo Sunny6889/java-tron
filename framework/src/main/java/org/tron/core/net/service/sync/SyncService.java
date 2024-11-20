@@ -134,6 +134,7 @@ public class SyncService {
       blockJustReceived.put(blockMessage, peer);
     }
     handleFlag = true;
+    // 如果节点同步状态空闲，则去同步下一个缺失的 block
     if (peer.isSyncIdle()) {
       if (peer.getRemainNum() > 0
           && peer.getSyncBlockToFetch().size() <= syncFetchBatchNum) {
