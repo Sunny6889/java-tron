@@ -507,6 +507,7 @@ public class Wallet {
 
       // 有效节点数量检查
       if (minEffectiveConnection != 0) {
+        // 活跃peer节点是空的
         if (tronNetDelegate.getActivePeer().isEmpty()) {
           logger.warn("Broadcast transaction {} has failed, no connection.", txID);
           return builder.setResult(false).setCode(response_code.NO_CONNECTION)
@@ -514,6 +515,7 @@ public class Wallet {
               .build();
         }
 
+        // 排除在同步中的peers
         int count = (int) tronNetDelegate.getActivePeer().stream()
             .filter(p -> !p.isNeedSyncFromUs() && !p.isNeedSyncFromPeer())
             .count();
@@ -528,6 +530,7 @@ public class Wallet {
         }
       }
 
+      // pending 要处理的 transaction 比较多
       if (dbManager.isTooManyPending()) {
         logger.warn("Broadcast transaction {} has failed, too many pending.", txID);
         return builder.setResult(false).setCode(response_code.SERVER_BUSY)
@@ -552,10 +555,14 @@ public class Wallet {
       if (trx.getInstance().getRawData().getContractCount() == 0) {
         throw new ContractValidateException(ActuatorConstant.CONTRACT_NOT_EXIST);
       }
+      // 检查交易是否会在下个产块前过期
       TransactionMessage message = new TransactionMessage(trx.getInstance().toByteArray());
       trx.checkExpiration(tronNetDelegate.getNextBlockSlotTime());
+
       //预执行交易，将交易放入pending列表
       dbManager.pushTransaction(trx);
+
+      // 广播给其他节点，会去重检查
       int num = tronNetService.fastBroadcastTransaction(message);
       if (num == 0 && minEffectiveConnection != 0) {
         return builder.setResult(false).setCode(response_code.NOT_ENOUGH_EFFECTIVE_CONNECTION)

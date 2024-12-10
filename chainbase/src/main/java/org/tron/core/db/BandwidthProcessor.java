@@ -163,6 +163,7 @@ public class BandwidthProcessor extends ResourceProcessor {
         continue;
       }
 
+      // 直接从账户扣TRX
       if (useTransactionFee(accountCapsule, bytesSize, trace)) {
         continue;
       }
@@ -211,7 +212,7 @@ public class BandwidthProcessor extends ResourceProcessor {
 
     long netUsage = accountCapsule.getNetUsage();
     long latestConsumeTime = accountCapsule.getLatestConsumeTime();
-    long netLimit = calculateGlobalNetLimit(accountCapsule);
+    long netLimit = calculateGlobalNetLimit(accountCapsule); // 质押的带宽
     long newNetUsage;
     if (!dynamicPropertiesStore.supportUnfreezeDelay()) {
       newNetUsage = increase(netUsage, 0, latestConsumeTime, now);
@@ -427,6 +428,7 @@ public class BandwidthProcessor extends ResourceProcessor {
 
   }
 
+  // 获取质押的带宽
   public long calculateGlobalNetLimit(AccountCapsule accountCapsule) {
     long frozeBalance = accountCapsule.getAllFrozenBalanceForBandwidth();
     if (dynamicPropertiesStore.supportUnfreezeDelay()) {

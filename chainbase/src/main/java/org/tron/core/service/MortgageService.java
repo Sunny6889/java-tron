@@ -85,6 +85,7 @@ public class MortgageService {
     adjustAllowance(witnessAddress, brokerageAmount);
   }
 
+  // withdrawReward把投票的奖励加到allowance 里面去
   public void withdrawReward(byte[] address) {
     if (!dynamicPropertiesStore.allowChangeDelegation()) {
       return;

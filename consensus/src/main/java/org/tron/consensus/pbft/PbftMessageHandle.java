@@ -104,7 +104,7 @@ public class PbftMessageHandle {
   }
 
   public void onPrePrepare(PbftMessage message) {
-    String key = message.getNo();
+    String key = message.getNo();//block块号
     if (message.isSwitch()) {//if is block chain switch,remove the before proposal
       logger.warn("block chain switch, again proposal block num: {}, data: {}",
           message.getNumber(), message.getDataString());
@@ -125,7 +125,8 @@ public class PbftMessageHandle {
     if (!checkIsCanSendMsg(epoch)) {
       return;
     }
-    // 发给SR
+
+    // 给节点的每个 SR miner都加上签名 然后转发其他 SR 节点
     for (Miner miner : getSrMinerList(epoch)) {
       PbftMessage paMessage = message.buildPrePareMessage(miner);
       forwardMessage(paMessage);
@@ -142,7 +143,7 @@ public class PbftMessageHandle {
   }
 
   public synchronized void onPrepare(PbftMessage message) {
-    String key = message.getKey();
+    String key = message.getKey(); // 块号+SR公钥
 
     if (!preVotes.contains(message.getNo())) {
       //Must be prepared in advance

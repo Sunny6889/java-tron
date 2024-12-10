@@ -101,6 +101,7 @@ public class PbftDataSyncHandler implements TronMsgHandler, Closeable {
     try {
       PbftSignDataStore pbftSignDataStore = chainBaseManager.getPbftSignDataStore();
       Raw raw = Raw.parseFrom(pbftCommitMessage.getPBFTCommitResult().getData());
+      // 判断所有签名
       if (!validPbftSign(raw, pbftCommitMessage.getPBFTCommitResult().getSignatureList(),
           chainBaseManager.getWitnesses())) {
         return;

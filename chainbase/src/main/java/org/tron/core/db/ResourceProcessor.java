@@ -42,14 +42,14 @@ abstract class ResourceProcessor {
     return increase(lastUsage, usage, lastTime, now, windowSize);
   }
 
-  protected long increase(long lastUsage, long usage, long lastTime, long now, long windowSize) {
+  protected long increase(long lastUsage, long usage, long lastTimeSlot, long nowSlot, long windowSize) {
     long averageLastUsage = divideCeil(lastUsage * precision, windowSize);
     long averageUsage = divideCeil(usage * precision, windowSize);
 
-    if (lastTime != now) {
-      assert now > lastTime;
-      if (lastTime + windowSize > now) {
-        long delta = now - lastTime;
+    if (lastTimeSlot != nowSlot) {
+      assert nowSlot > lastTimeSlot;
+      if (lastTimeSlot + windowSize > nowSlot) {
+        long delta = nowSlot - lastTimeSlot;
         double decay = (windowSize - delta) / (double) windowSize;
         averageLastUsage = Math.round(averageLastUsage * decay);
       } else {
@@ -78,7 +78,7 @@ abstract class ResourceProcessor {
     if (lastTime != now) {
       if (lastTime + oldWindowSize > now) {
         long delta = now - lastTime;
-        double decay = (oldWindowSize - delta) / (double) oldWindowSize;
+        double decay = (oldWindowSize - delta) / (double) oldWindowSize;// 距离上次使用间隔越短，decay越大
         averageLastUsage = Math.round(averageLastUsage * decay);
       } else {
         averageLastUsage = 0;

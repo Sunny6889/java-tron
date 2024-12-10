@@ -471,7 +471,7 @@ public class TransactionCapsule implements ProtoCapsule<Transaction> {
       throws PermissionException, SignatureException, SignatureFormatException {
     Transaction.Contract contract = transaction.getRawData().getContractList().get(0);
     int permissionId = contract.getPermissionId();
-    byte[] owner = getOwner(contract);
+    byte[] owner = getOwner(contract); // 从明文中获取 owner_address
     AccountCapsule account = accountStore.get(owner);
     Permission permission = null;
     if (account == null) {

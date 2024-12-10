@@ -39,6 +39,7 @@ public class PbftMsgHandler {
     if (Param.getInstance().getPbftInterface().isSyncing()) {
       return;
     }
+    // 过期时间检查
     if (msg.getDataType().equals(DataType.BLOCK)
         && tronNetDelegate.getHeadBlockId().getNum() - msg.getNumber()
         > Args.getInstance().getPBFTExpireNum()) {
@@ -58,6 +59,7 @@ public class PbftMsgHandler {
       if (msgCache.getIfPresent(key) != null) {
         return;
       }
+      // 检查签名的是不是在有权出块的SR列表里面了
       if (!pbftManager.verifyMsg(msg)) {
         throw new P2pException(P2pException.TypeEnum.BAD_MESSAGE, msg.toString());
       }

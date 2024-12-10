@@ -303,7 +303,7 @@ public class SyncService {
     try {
       tronNetDelegate.validSignature(block);
       tronNetDelegate.processBlock(block, true);
-      pbftDataSyncHandler.processPBFTCommitData(block);
+      pbftDataSyncHandler.processPBFTCommitData(block); // 检查 pbft 的签名
     } catch (P2pException p2pException) {
       logger.error("Process sync block {} failed, type: {}",
               blockId.getString(), p2pException.getType());

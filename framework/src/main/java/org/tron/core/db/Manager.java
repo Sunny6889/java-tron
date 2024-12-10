@@ -1344,7 +1344,11 @@ public class Manager { //交易及区块校验并处理逻辑
           }
           logger.info(SAVE_BLOCK, newBlock);
         }
-        //clear ownerAddressSet
+        /*
+        在应用新的区块时clear ownerAddressSet，
+        但是有[待处理交易的账户]在[刚刚上面applyBlock的交易中]发起过更改权限的交易，再加入到ownerAddressSet,
+        这个会使交易处理时再次验签，防止在新区块中更改的权限跟未处理的交易发生竞争
+         */
         if (CollectionUtils.isNotEmpty(ownerAddressSet)) {
           Set<String> result = new HashSet<>();
           for (TransactionCapsule transactionCapsule : rePushTransactions) {
@@ -1511,6 +1515,7 @@ public class Manager { //交易及区块校验并处理逻辑
     }
 
 
+    // 如果是涉及到多个签名的交易，目前有AccountPermissionUpdateContract
     if (isMultiSignTransaction(trxCap.getInstance())) {
       ownerAddressSet.add(ByteArray.toHexString(trxCap.getOwnerAddress()));
     }
@@ -1633,6 +1638,7 @@ public class Manager { //交易及区块校验并处理逻辑
       //multi sign transaction
       byte[] owner = trx.getOwnerAddress();
       String ownerAddress = ByteArray.toHexString(owner);
+      // 有权限修改的账户在一个区块只能有一个交易，其它交易会跳过
       if (accountSet.contains(ownerAddress)) {
         continue;
       } else {
@@ -1640,6 +1646,7 @@ public class Manager { //交易及区块校验并处理逻辑
           accountSet.add(ownerAddress);
         }
       }
+      // 如果有pending交易涉及到多签，产块时需要再次去验证签名
       if (ownerAddressSet.contains(ownerAddress)) {
         trx.setVerified(false);
       }

@@ -127,7 +127,7 @@ public class MaintenanceManager {
 
       dposService.updateWitness(newWitnessAddressList);
 
-      incentiveManager.reward(newWitnessAddressList);
+      incentiveManager.reward(newWitnessAddressList); //inside disabled
 
       List<ByteString> newWits = consensusDelegate.getActiveWitnesses();
       if (!CollectionUtils.isEqualCollection(currentWits, newWits)) {
