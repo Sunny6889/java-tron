@@ -61,23 +61,23 @@ abstract class ResourceProcessor {
   }
 
   public long recovery(AccountCapsule accountCapsule, ResourceCode resourceCode,
-      long lastUsage, long lastTime, long now) {
+      long lastUsage, long lastTimeSlot, long nowSlot) {
     long oldWindowSize = accountCapsule.getWindowSize(resourceCode);
-    return increase(lastUsage, 0, lastTime, now, oldWindowSize);
+    return increase(lastUsage, 0, lastTimeSlot, nowSlot, oldWindowSize);
   }
 
   public long increase(AccountCapsule accountCapsule, ResourceCode resourceCode,
-      long lastUsage, long usage, long lastTime, long now) {
+                       long lastUsage, long usage, long lastTimeSlot, long nowSlot) {
     if (dynamicPropertiesStore.supportAllowCancelAllUnfreezeV2()) {
-      return increaseV2(accountCapsule, resourceCode, lastUsage, usage, lastTime, now);
+      return increaseV2(accountCapsule, resourceCode, lastUsage, usage, lastTimeSlot, nowSlot);
     }
     long oldWindowSize = accountCapsule.getWindowSize(resourceCode);
     long averageLastUsage = divideCeil(lastUsage * this.precision, oldWindowSize);
     long averageUsage = divideCeil(usage * this.precision, this.windowSize);
 
-    if (lastTime != now) {
-      if (lastTime + oldWindowSize > now) {
-        long delta = now - lastTime;
+    if (lastTimeSlot != nowSlot) {
+      if (lastTimeSlot + oldWindowSize > nowSlot) {
+        long delta = nowSlot - lastTimeSlot;
         double decay = (oldWindowSize - delta) / (double) oldWindowSize;// 距离上次使用间隔越短，decay越大
         averageLastUsage = Math.round(averageLastUsage * decay);
       } else {
@@ -92,7 +92,7 @@ abstract class ResourceProcessor {
         accountCapsule.setNewWindowSize(resourceCode, this.windowSize);
         return newUsage;
       }
-      long remainWindowSize = oldWindowSize - (now - lastTime);
+      long remainWindowSize = oldWindowSize - (nowSlot - lastTimeSlot);
       long newWindowSize = getNewWindowSize(remainUsage, remainWindowSize, usage,
           windowSize, newUsage);
       accountCapsule.setNewWindowSize(resourceCode, newWindowSize);
@@ -101,15 +101,15 @@ abstract class ResourceProcessor {
   }
 
   public long increaseV2(AccountCapsule accountCapsule, ResourceCode resourceCode,
-      long lastUsage, long usage, long lastTime, long now) {
+                         long lastUsage, long usage, long lastTimeSlot, long nowSlot) {
     long oldWindowSizeV2 = accountCapsule.getWindowSizeV2(resourceCode);
     long oldWindowSize = accountCapsule.getWindowSize(resourceCode);
     long averageLastUsage = divideCeil(lastUsage * this.precision, oldWindowSize);
     long averageUsage = divideCeil(usage * this.precision, this.windowSize);
 
-    if (lastTime != now) {
-      if (lastTime + oldWindowSize > now) {
-        long delta = now - lastTime;
+    if (lastTimeSlot != nowSlot) {
+      if (lastTimeSlot + oldWindowSize > nowSlot) {
+        long delta = nowSlot - lastTimeSlot;
         double decay = (oldWindowSize - delta) / (double) oldWindowSize;
         averageLastUsage = Math.round(averageLastUsage * decay);
       } else {
@@ -124,7 +124,7 @@ abstract class ResourceProcessor {
       return newUsage;
     }
 
-    long remainWindowSize = oldWindowSizeV2 - (now - lastTime) * WINDOW_SIZE_PRECISION;
+    long remainWindowSize = oldWindowSizeV2 - (nowSlot - lastTimeSlot) * WINDOW_SIZE_PRECISION;
     long newWindowSize = divideCeil(
         remainUsage * remainWindowSize + usage * this.windowSize * WINDOW_SIZE_PRECISION, newUsage);
     newWindowSize = Math.min(newWindowSize, this.windowSize * WINDOW_SIZE_PRECISION);
