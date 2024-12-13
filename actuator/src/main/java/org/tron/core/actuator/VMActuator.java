@@ -594,16 +594,19 @@ public class VMActuator implements Actuator2 {
       long callValue) {
 
     long sunPerEnergy = VMConstant.SUN_PER_ENERGY;
-    if (rootRepository.getDynamicPropertiesStore().getEnergyFee() > 0) {
+    if (rootRepository.getDynamicPropertiesStore().getEnergyFee() > 0) { // #11 提案，目前是 210sun = 1 enegry
       sunPerEnergy = rootRepository.getDynamicPropertiesStore().getEnergyFee();
     }
-    // can change the calc way
+    // 通过24h Decay计算账户可用的energy
     long leftEnergyFromFreeze = rootRepository.getAccountLeftEnergyFromFreeze(account);
     callValue = max(callValue, 0);
+
+    // 计算账户balance减去此次交易转移的TRX能换算多少energy
     long energyFromBalance = Math
         .floorDiv(max(account.getBalance() - callValue, 0), sunPerEnergy);
 
     long energyFromFeeLimit;
+    // 通过质押或者代理获取energy的 TRX 余额
     long totalBalanceForEnergyFreeze = account.getAllFrozenBalanceForEnergy();
     if (0 == totalBalanceForEnergyFreeze) {
       energyFromFeeLimit =

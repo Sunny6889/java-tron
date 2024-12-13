@@ -82,7 +82,7 @@ public class StateManager {
       return;
     }
 
-    // 检查区块的记账人是否在是本地SR
+    // 检查区块的记账人是否是本地SR
     ByteString witness = blockCapsule.getWitnessAddress();
     if (!dposService.getMiners().containsKey(witness)) {
       return;

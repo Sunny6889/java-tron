@@ -320,6 +320,7 @@ public class BandwidthProcessor extends ResourceProcessor {
     long newPublicFreeAssetNetUsage = increase(publicFreeAssetNetUsage, 0,
         publicLatestFreeNetTime, now);
 
+    // 先检查发币账户的免费带宽
     if (bytes > (publicFreeAssetNetLimit - newPublicFreeAssetNetUsage)) {
       logger.debug("The {} public free bandwidth is not enough."
               + " Bytes: {}, publicFreeAssetNetLimit: {}, newPublicFreeAssetNetUsage: {}.",

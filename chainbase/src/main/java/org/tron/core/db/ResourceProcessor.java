@@ -100,6 +100,39 @@ abstract class ResourceProcessor {
     return newUsage;
   }
 
+  public long increaseV2Copy(AccountCapsule accountCapsule, ResourceCode resourceCode,
+                         long lastUsage, long usage, long lastTimeSlot, long nowSlot) {
+    long oldWindowSizeV2 = accountCapsule.getWindowSizeV2(resourceCode);
+    long oldWindowSize = accountCapsule.getWindowSize(resourceCode);
+    long averageLastUsage = lastUsage * this.precision / oldWindowSize;
+    long averageUsage = usage * this.precision / this.windowSize;
+
+    long decay = 0;
+    if (lastTimeSlot != nowSlot) {
+      if (lastTimeSlot + oldWindowSize > nowSlot) {
+        long delta = nowSlot - lastTimeSlot;
+        decay = (long) ((oldWindowSize - delta) / (double) oldWindowSize);
+        averageLastUsage = Math.round(averageLastUsage * decay);
+      } else {
+        averageLastUsage = 0;
+      }
+    }
+
+    long lastDecayUsage = lastUsage * decay;
+    long newTotalUsage = lastDecayUsage + usage;
+    if (lastDecayUsage == 0) {
+      accountCapsule.setNewWindowSizeV2(resourceCode, this.windowSize * WINDOW_SIZE_PRECISION);
+      return newTotalUsage;
+    }
+
+    long remainWindowSize = (this.windowSize  - (nowSlot - lastTimeSlot)) * WINDOW_SIZE_PRECISION;
+    long newWindowSize = ((lastDecayUsage * decay + usage) / (lastDecayUsage + usage)) * this.windowSize * WINDOW_SIZE_PRECISION ;
+
+    newWindowSize = Math.min(newWindowSize, this.windowSize * WINDOW_SIZE_PRECISION);
+    accountCapsule.setNewWindowSizeV2(resourceCode, newWindowSize);
+    return newTotalUsage;
+  }
+
   public long increaseV2(AccountCapsule accountCapsule, ResourceCode resourceCode,
                          long lastUsage, long usage, long lastTimeSlot, long nowSlot) {
     long oldWindowSizeV2 = accountCapsule.getWindowSizeV2(resourceCode);
