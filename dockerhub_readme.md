@@ -45,7 +45,7 @@ docker build -t tronprotocol/java-tron .
 You can run the command below to start the java-tron:
 ```
 docker run -it --name tron -d \
--p 8092:8092 -p 8091:8091 -p 18888:18888/udp -p 18888:18888/tcp -p 50051:50051 \
+-p 8090:8090 -p 8091:8091 -p 18888:18888/udp -p 18888:18888/tcp -p 50051:50051 \
 --restart always tronprotocol/java-tron 
 ```
 The `-p` flag defines the ports that the container needs to be mapped on the host machine.
@@ -84,7 +84,7 @@ For abnormal cases please check below troubleshot section.
 ### Run with customized configure
 This image also supports customizing some startup parameters, here is an example for running a FullNode as witness with customized configuration file:
 ```
-docker run -it --name tron -d -p 8080:8080 -p 8090:8090 -p 18888:18888 -p 50051:50051 \
+docker run -it --name tron -d -p 8090:8090 -p 8091:8091 -p 18888:18888 -p 50051:50051 \
            -v /host/path/java-tron/conf:/java-tron/conf \ 
            -v /host/path/java-tron/datadir:/java-tron/data \ 
            tronprotocol/java-tron \
@@ -110,8 +110,33 @@ Flags after `tronprotocol/java-tron` are used for java-tron start-up arguments:
 Note: The jvm parameters must be enclosed in double quotes and braces.
 
 ## Interact with FullNode 
-After the local fullnode image run successfully, you could play with it using http API or wallet-cli, refer the [guidance](https://tronprotocol.github.io/documentation-en/getting_started/getting_started_with_javatron/#interacting-with-java-tron-nodes-using-curl). 
+After the local fullnode image run successfully, you could play with it using http API or wallet-cli, refer the [guidance](https://tronprotocol.github.io/documentation-en/getting_started/getting_started_with_javatron/#interacting-with-java-tron-nodes-using-curl).
 
+For example request to get block info with num:
+```
+curl --location 'localhost:8090/wallet/getblock' \
+--header 'Content-Type: application/json' \
+--data '{
+    "id_or_num": "100",
+    "detail": true
+}'
+```
+Response:
+```
+{
+    "blockID": "00000000000000644df09e6883a3a7900814f8d78cf47b255b7ed284527a773d",
+    "block_header": {
+        "raw_data": {
+            "number": 100,
+            "txTrieRoot": "0000000000000000000000000000000000000000000000000000000000000000",
+            "witness_address": "414b4778beebb48abe0bc1df42e92e0fe64d0c8685",
+            "parentHash": "0000000000000063ed8544c4c17fc053dfc729e610673c783bcdc3cf0781b07f",
+            "timestamp": 1529891811000
+        },
+        "witness_signature": "277d4440e2feb552b6d2d557ba407f68310887020fcc7ef6e2733286a0d13c703ebf2306293bda9d2ddac09835be67583c736a65494115825b6f4ab6a15f1e0f01"
+    }
+}
+```
 Notice: Before the local fullnode synced with the latest block transactions, request for account status or transaction infos maybe outdated or empty.
 
 ## Troubleshot 
