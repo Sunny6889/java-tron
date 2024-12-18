@@ -45,96 +45,79 @@ docker build -t tronprotocol/java-tron .
 You can run the command below to start the java-tron:
 ```
 docker run -it --name tron -d \
--p 8092:8092 -p 8091:8091 -p 18888:18888 -p 50051:50051 \
+-p 8092:8092 -p 8091:8091 -p 18888:18888/udp -p 18888:18888/tcp -p 50051:50051 \
 --restart always tronprotocol/java-tron 
 ```
 The `-p` flag defines the ports that the container needs to be mapped on the host machine.
-By default, it will use [configuration](https://github.com/tronprotocol/java-tron/blob/develop/framework/src/main/resources/config.conf).
-This fullNode will connect to mainnet with genesis block setting in [configuration](https://github.com/tronprotocol/java-tron/blob/develop/framework/src/main/resources/config.conf#L397).
-Once fullnode started it will begin to sync blocks with other peers from block number 1.
 
-Check the logs using command `docker exec -it tron tail -f ./logs/tron.log`
+By default, it will use [configure](https://github.com/tronprotocol/java-tron/blob/develop/framework/src/main/resources/config.conf), 
+which set fullNode connect to mainnet with genesis block setting in `genesis.block`.
+Once fullnode started, it will begin to sync blocks with other peers from block number 1.
 
-This image also supports customizing some startup parameters，here is an example for running a FullNode as a witness use customized configuration file:
+Check the logs using command `docker exec -it tron tail -f ./logs/tron.log`, it will show content similar as below:
+```
+...
+06:43:09.966 INFO  [DiscoverServer] [net](DiscoverServer.java:74) Discovery server started, bind port 18888
+06:43:10.007 INFO  [main] [consensus](ConsensusService.java:84) consensus service start success
+06:43:13.689 INFO  [connPool] [net](ConnPoolService.java:194) Connect to peer /54.82.161.39:18888
+06:43:13.710 INFO  [connPool] [net](ConnPoolService.java:194) Connect to peer /52.53.189.99:18888
+06:43:13.717 INFO  [connPool] [net](ConnPoolService.java:194) Connect to peer /54.153.94.160:18888
+06:43:13.728 INFO  [connPool] [net](ConnPoolService.java:194) Connect to peer /43.198.142.160:18888
+06:43:13.741 INFO  [connPool] [net](ConnPoolService.java:194) Connect to peer /54.179.207.68:18888
+06:43:13.797 INFO  [peerClient-5] [net](Channel.java:140) Send message to channel /54.179.207.68:18888, [HelloMessage: from {
+  address: "203.117.139.182"
+  port: 18888
+  nodeId: "p\rc\017o\225\255\035^?\023\252\346\262\216\033\310\260\204b\265\022\232\337\240d\216\233\232\361f\350\326\310\206\376h\220/\341R\200\234\233#9E\245\233\0241\253\300V\365 yo\350\360:\316\351C"
+}
+network_id: 11111
+timestamp: 1734504193756
+version: 1
+... ...
+06:43:13.800 INFO  [sync-handle-block] [consensus](DposService.java:162) Update solid block number to 678
+06:43:13.800 INFO  [sync-handle-block] [DB](DynamicPropertiesStore.java:2193) Update latest block header id = 00000000000002b842047d63fa2700b420051b9a770e2c10cbde031b76c5980f.
+06:43:13.800 INFO  [sync-handle-block] [DB](DynamicPropertiesStore.java:2185) Update latest block header number = 696.
+06:43:13.800 INFO  [sync-handle-block] [DB](DynamicPropertiesStore.java:2177) Update latest block header timestamp = 1529893626000.
+... ...
+```
+For abnormal cases please check below troubleshot section.
+
+### Run with customized configure
+This image also supports customizing some startup parameters, here is an example for running a FullNode as witness with customized configuration file:
 ```
 docker run -it --name tron -d -p 8080:8080 -p 8090:8090 -p 18888:18888 -p 50051:50051 \
-           -v /host/path/java-tron/config:/java-tron/conf \ 
-           -v /host/path/java-tron/output-directory:/java-tron/data \ 
+           -v /host/path/java-tron/conf:/java-tron/conf \ 
+           -v /host/path/java-tron/datadir:/java-tron/data \ 
            tronprotocol/java-tron \
            -jvm "{-Xmx10g -Xms10g}" \
            -c /java-tron/conf/config-localtest.conf \
            -d /java-tron/data \
-           -w # witness
+           -w
 ```
+The `-v` flag defines the directory that the container needs to be mapped on the host machine. 
+In above example the host file `/host/path/java-tron/conf/config-localtest.conf` will be used, for example in java-tron [config-localtest](https://github.com/tronprotocol/java-tron/blob/develop/framework/src/main/resources/config-localtest.conf). 
 
-The `-v` flag defines the ports that the container needs to be mapped on the host machine.
-Note: The to mount directory for conf must contain the file `config-localtest.conf`([link](https://github.com/tronprotocol/java-tron/blob/develop/framework/src/main/resources/config-localtest.conf)) referred by below `-c` command. The jvm parameters must be enclosed in double quotes and braces.
-You could mount directory for datadir with snapshots, please refer to [guidance](https://tronprotocol.github.io/documentation-zh/using_javatron/backup_restore/#_5). 
-It could save time to sync from latest block number。
-`-w` means start as witness, you need fill `localwitness` with private key in the above conf file, refer to [guidance](https://tronprotocol.github.io/documentation-zh/using_javatron/installing_javatron/#_3).
+Inside the config file `node.p2p.version` is used to set the P2P network id. Only nodes with the same network id can shake hands successfully.
+- TRON mainnet: node.p2p.version=11111
+- Nile testnet: node.p2p.version = 201910292
+- Private network：set to other values
 
-## Quickstart for using docker-tron-quickstart
-The purpose of it is to set up a complete private network for Tron development. Through TRON Quickstart, users can deploy DApps, smart contracts, and interact with the TronWeb library.
-Check more information at [Quickstart:](https://github.com/TRON-US/docker-tron-quickstart)
+Flags after `tronprotocol/java-tron` are used for java-tron start-up arguments:
+- `-c` defines the configuration file to use.
+- `-d` defines the database file to use. You could mount directory for datadir with snapshots, please refer to [guidance](https://tronprotocol.github.io/documentation-en/using_javatron/backup_restore/#_5).
+  It could save time to sync from near latest block number。 
+- `-w` means start as witness, you need fill `localwitness` with private key in configure file, refer to [guidance](https://tronprotocol.github.io/documentation-zh/using_javatron/installing_javatron/#_3).
 
-The docker image exposes:
-- Full Node
-- Solidity Node
-- Event Server.
+Note: The jvm parameters must be enclosed in double quotes and braces.
 
-### Node.JS Console
-Node.JS is used to interact with the Full and Solidity Nodes via Tron-Web.  
-[Node.JS](https://nodejs.org/en/) Console Download
+## Interact with FullNode 
+After the local fullnode image run successfully, you could play with it using http API or wallet-cli, refer the [guidance](https://tronprotocol.github.io/documentation-en/getting_started/getting_started_with_javatron/#interacting-with-java-tron-nodes-using-curl). 
 
-### Clone TRON Quickstart
-```shell
-git clone https://github.com/TRON-US/docker-tron-quickstart.git
-```  
+Notice: Before the local fullnode synced with the latest block transactions, request for account status or transaction infos maybe outdated or empty.
 
-### Pull the image using docker:
-```shell
-docker pull trontools/quickstart
-```  
+## Troubleshot 
+After you start the docker container, check `docker exec -it tron tail -f ./logs/tron.log` to see whether fullnode works as expected, or there is error when you interact with the fullnode.
 
-## Docker Commands
-Here are some useful docker commands, which will help you manage the TRON Quickstart Docker container on your machine.
+### Error Case Handling
+#### Zero Peer Connection 
+If the logs show `Peer stats: all 0, active 0, passive 0`, restart the docker app(not the image) in your host.
 
-**To list all active containers on your machine, run:**
-```shell
-docker container ps
-```  
-**Output:**
-```shell
-docker container ps
-
-CONTAINER ID        IMAGE               COMMAND                 CREATED             STATUS              PORTS                                              NAMES
-513078dc7816        tron                "./quickstart v2.0.0"   About an hour ago   Up About an hour    0.0.0.0:9090->9090/tcp, 0.0.0.0:18190->18190/tcp   tron
-```  
-**To kill an active container, run:**
-```shell
-docker container kill 513078dc7816   // use your container ID
-```  
-
-### How to check the logs of the FullNode ###
-```
-  docker exec -it tron tail -f /tron/logs/tron.log 
-```
-
- <details>
-
-<summary>Output: something like following </summary>
-
-  ```
-  number=204
-  parentId=00000000000000cb0985978b3c780e4219dc51e4329beecabe7b71f99d269985
-  witness address=41928c9af0651632157ef27a2cf17ca72c575a4d21
-  generated by myself=true
-  generate time=2019-12-09 18:33:33.0
-  txs are empty
-  ]
-  18:33:33.008 INFO  [Thread-5] [DB](Manager.java:1095) pushBlock block number:204, cost/txs:1/0
-  18:33:33.008 INFO  [Thread-5] [witness](WitnessService.java:283) Produce block successfully, blockNumber:204, abSlot[525305471], blockId:00000000000000ccc37f1f5c2ceb574d14c490e3d0b86909855646f9384ba666, transactionSize:0, blockTime:2019-12-09T18:33:33.000Z, parentBlockId:00000000000000cb0985978b3c780e4219dc51e4329beecabe7b71f99d269985
-  18:33:33.008 INFO  [Thread-5] [net](AdvService.java:156) Ready to broadcast block Num:204,ID:00000000000000ccc37f1f5c2ceb574d14c490e3d0b86909855646f9384ba666
-  ........  etc
-  ```
-</details>
