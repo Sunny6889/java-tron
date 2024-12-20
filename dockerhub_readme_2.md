@@ -39,7 +39,9 @@ Download the official Docker image from Docker Hub using the following command i
 ```
 docker pull tronprotocol/java-tron
 ```
-Check [Docker Hub](https://hub.docker.com/r/tronprotocol/java-tron/tags) for historical images.
+Check [Docker Hub](https://hub.docker.com/r/tronprotocol/java-tron/tags) for historical images. 
+
+Notice: To ensure your download has not been tampered with,, you can use `docker images --digests` to compare the digest with the [officals](https://hub.docker.com/r/tronprotocol/java-tron/tags). 
 
 ### Build from source code
 
@@ -69,40 +71,15 @@ The `-p` flag specifies the ports that the container needs to map to the host ma
 
 By default, it will use the [configuration](https://github.com/tronprotocol/java-tron/blob/develop/framework/src/main/resources/config.conf), 
 which sets the fullNode to connect to the mainnet with genesis block settings in `genesis.block`.
-Once the fullnode starts, it will begin to sync blocks with other peers starting from block number 1.
+Once the fullnode starts, it will begin to sync blocks with other peers starting from genesis block.
 
-Check the logs using command `docker exec -it tron tail -f ./logs/tron.log`. It will show content similar to below. 
-It shows the fullnode handshaking with peers successfully and then syncing for blocks. 
-```
-...
-06:43:09.966 INFO  [DiscoverServer] [net](DiscoverServer.java:74) Discovery server started, bind port 18888
-06:43:10.007 INFO  [main] [consensus](ConsensusService.java:84) consensus service start success
-06:43:13.689 INFO  [connPool] [net](ConnPoolService.java:194) Connect to peer /54.82.161.39:18888
-06:43:13.710 INFO  [connPool] [net](ConnPoolService.java:194) Connect to peer /52.53.189.99:18888
-06:43:13.717 INFO  [connPool] [net](ConnPoolService.java:194) Connect to peer /54.153.94.160:18888
-06:43:13.728 INFO  [connPool] [net](ConnPoolService.java:194) Connect to peer /43.198.142.160:18888
-06:43:13.741 INFO  [connPool] [net](ConnPoolService.java:194) Connect to peer /54.179.207.68:18888
-06:43:13.797 INFO  [peerClient-5] [net](Channel.java:140) Send message to channel /54.179.207.68:18888, [HelloMessage: from {
-  address: "203.117.139.182"
-  port: 18888
-  nodeId: "p\rc\017o\225\255\035^?\023\252\346\262\216\033\310\260\204b\265\022\232\337\240d\216\233\232\361f\350\326\310\206\376h\220/\341R\200\234\233#9E\245\233\0241\253\300V\365 yo\350\360:\316\351C"
-}
-network_id: 11111
-timestamp: 1734504193756
-version: 1
-... ...
-06:43:13.800 INFO  [sync-handle-block] [consensus](DposService.java:162) Update solid block number to 678
-06:43:13.800 INFO  [sync-handle-block] [DB](DynamicPropertiesStore.java:2193) Update latest block header id = 00000000000002b842047d63fa2700b420051b9a770e2c10cbde031b76c5980f.
-06:43:13.800 INFO  [sync-handle-block] [DB](DynamicPropertiesStore.java:2185) Update latest block header number = 696.
-06:43:13.800 INFO  [sync-handle-block] [DB](DynamicPropertiesStore.java:2177) Update latest block header timestamp = 1529893626000.
-... ...
-```
+Check the logs using command `docker exec -it tron tail -f ./logs/tron.log`. It will show the fullnode handshaking with peers successfully and then syncing for blocks. 
 For abnormal cases, please check the troubleshooting section below.
 
 ### Run with customized configure
 This image also supports customizing some startup parameters. Here is an example for running a FullNode as a witness with a customized configuration file:
 ```
-docker run -it --name tron -d -p 8090:8090 -p 8091:8091 -p 18888:18888 -p 50051:50051 \
+docker run -it --name tron -d -p 8090:8090 -p 8091:8091 -p 18888:18888 -p 18888:18888/udp -p 50051:50051 \
            -v /host/path/java-tron/conf:/java-tron/conf \ 
            -v /host/path/java-tron/datadir:/java-tron/data \ 
            tronprotocol/java-tron \
@@ -123,7 +100,7 @@ Flags after `tronprotocol/java-tron` are used for java-tron start-up arguments:
 - `-jvm` used for java virtual machine, the parameters must be enclosed in double quotes and braces. `"{-Xmx10g -Xms10g}"` sets the maximum and initial heap size to 10GB.
 - `-c` defines the configuration file to use.
 - `-d` defines the database file to use. You can mount a directory for `datadir` with snapshots. Please refer to [**Lite-FullNode**](https://tronprotocol.github.io/documentation-en/using_javatron/backup_restore/#_5). This can save time by syncing from a near-latest block number.
-- `-w` means to start as a witness. You need to fill the `localwitness` field with private keys in configure file. Refer to the [guidance](https://tronprotocol.github.io/documentation-en/using_javatron/installing_javatron/#_3).
+- `-w` means to start as a witness. You need to fill the `localwitness` field with private keys in configure file. Refer to the [**Run as Witness**](https://tronprotocol.github.io/documentation-en/using_javatron/installing_javatron/#startup-a-fullnode-that-produces-blocks).
 
 ## Interact with FullNode 
 After the fullnode runs successfully, you can interact with it using the HTTP API or wallet-cli. For more details, please refer to [guidance](https://tronprotocol.github.io/documentation-en/getting_started/getting_started_with_javatron/#interacting-with-java-tron-nodes-using-curl).
@@ -153,7 +130,7 @@ Response:
     }
 }
 ```
-Notice: Before the local full node has synced with the latest block transactions, requests for account status or transaction information may be outdated or empty.
+**Notice**: Before the local full node has synced with the latest block transactions, requests for account state or transaction information may be outdated or empty.
 
 ## Troubleshot 
 After starting the docker container, use `docker exec -it tron tail -f ./logs/tron.log` to check if the full node is functioning as expected and to identify any errors when interacting with the full node.
