@@ -35,13 +35,12 @@ There are two ways to obtain the Tron image:
 
 ### Using the official Docker images
 
-Download the official Docker image from Docker Hub using the following command if you'd like to use the official images:
+The quick start way is to use the official images. Download the official docker image from [Docker Hub](https://hub.docker.com/r/tronprotocol/java-tron/tags) using the following command:
+
 ```
 docker pull tronprotocol/java-tron
 ```
-Check [Docker Hub](https://hub.docker.com/r/tronprotocol/java-tron/tags) for historical images. 
-
-Notice: To ensure your download has not been tampered with,, you can use `docker images --digests` to compare the digest with the [officals](https://hub.docker.com/r/tronprotocol/java-tron/tags). 
+Notice: To ensure your download has not been tampered with, you can use `docker images --digests` to compare the digest with the [officals](https://hub.docker.com/r/tronprotocol/java-tron/tags). 
 
 ### Build from source code
 
