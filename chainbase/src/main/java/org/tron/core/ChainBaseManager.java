@@ -72,6 +72,7 @@ import org.tron.core.store.ZKProofStore;
 @Component
 public class ChainBaseManager {
 
+  //当一个共享变量被volatile修饰时，它会保证修改的值会立即被更新到主存，当有其他线程需要读取时，它会去内存中读取新值。
   @Getter
   private static volatile ChainBaseManager chainBaseManager;
 
@@ -81,7 +82,7 @@ public class ChainBaseManager {
   private AccountStore accountStore;
   @Autowired
   @Getter
-  private AccountAssetStore accountAssetStore;
+  private AccountAssetStore accountAssetStore; // 不可回滚
   @Autowired
   @Getter
   private BlockStore blockStore;
@@ -96,7 +97,7 @@ public class ChainBaseManager {
   private AssetIssueV2Store assetIssueV2Store;
   @Autowired
   @Getter
-  private DynamicPropertiesStore dynamicPropertiesStore;
+  private DynamicPropertiesStore dynamicPropertiesStore; // 保留当下最高区块
   @Autowired
   @Getter
   private BlockIndexStore blockIndexStore;
@@ -159,7 +160,7 @@ public class ChainBaseManager {
   private NullifierStore nullifierStore;
   @Autowired
   @Getter
-  private ZKProofStore proofStore;
+  private ZKProofStore proofStore; // 不可回滚
 
   @Autowired
   @Getter
@@ -179,7 +180,7 @@ public class ChainBaseManager {
 
   @Autowired
   @Getter
-  private KhaosDatabase khaosDb;
+  private KhaosDatabase khaosDb; // 放置一些查询信息，比如区块
 
   @Autowired
   @Getter

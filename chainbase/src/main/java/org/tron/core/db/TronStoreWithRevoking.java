@@ -41,12 +41,12 @@ import org.tron.core.exception.ItemNotFoundException;
 public abstract class TronStoreWithRevoking<T extends ProtoCapsule> implements ITronChainBase<T> {
 
   @Getter // only for unit test
-  protected IRevokingDB revokingDB;
+  protected IRevokingDB revokingDB; // 初始化创建带有 SnapshotRoot的 ChainBase
   private TypeToken<T> token = new TypeToken<T>(getClass()) {
   };
 
   @Autowired
-  private RevokingDatabase revokingDatabase;
+  private RevokingDatabase revokingDatabase; // SnapshotManager实现
 
   @Autowired
   private DbStatService dbStatService;

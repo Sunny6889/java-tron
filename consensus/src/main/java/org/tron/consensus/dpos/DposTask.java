@@ -100,11 +100,13 @@ public class DposTask {
           return state;
         }
 
+        // 获取相对最高区块应该增加几个slot, 正常情况应该是 1，如果有产块失败的就会跳过增加变成 2，3...
         long slot = dposSlot.getSlot(System.currentTimeMillis() + 50);
         if (slot == 0) {
           return State.NOT_TIME_YET;
         }
 
+        // 获取当前应该出块见证人SR
         ByteString pWitness = dposSlot.getScheduledWitness(slot);
 
         Miner miner = dposService.getMiners().get(pWitness);

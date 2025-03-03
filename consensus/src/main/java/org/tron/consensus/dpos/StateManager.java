@@ -42,6 +42,7 @@ public class StateManager {
       return State.CLOCK_ERROR;
     }
 
+    //主备SR节点，保证是主节点
     State status = dposService.getBlockHandle().getState();
     if (!State.OK.equals(status)) {
       return status;
@@ -76,10 +77,12 @@ public class StateManager {
       return;
     }
 
+    // 检查是否最新块
     if (System.currentTimeMillis() - blockCapsule.getTimeStamp() > BLOCK_PRODUCED_INTERVAL) {
       return;
     }
 
+    // 检查区块的记账人是否是本地SR
     ByteString witness = blockCapsule.getWitnessAddress();
     if (!dposService.getMiners().containsKey(witness)) {
       return;
@@ -90,6 +93,7 @@ public class StateManager {
       return;
     }
 
+    // 如果旧的区块
     if (null != currentBlockId
         && currentBlockId.toString().compareTo(blockCapsule.getBlockId().toString()) > 0) {
       return;

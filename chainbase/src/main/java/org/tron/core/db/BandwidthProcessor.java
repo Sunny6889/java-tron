@@ -165,6 +165,7 @@ public class BandwidthProcessor extends ResourceProcessor {
         continue;
       }
 
+      // 直接从账户扣TRX
       if (useTransactionFee(accountCapsule, bytesSize, trace)) {
         continue;
       }
@@ -206,33 +207,33 @@ public class BandwidthProcessor extends ResourceProcessor {
   }
 
   public boolean consumeBandwidthForCreateNewAccount(AccountCapsule accountCapsule, long bytes,
-      long now, TransactionTrace trace) {
+      long nowSlot, TransactionTrace trace) {
 
     long createNewAccountBandwidthRatio = chainBaseManager.getDynamicPropertiesStore()
         .getCreateNewAccountBandwidthRate();
 
     long netUsage = accountCapsule.getNetUsage();
-    long latestConsumeTime = accountCapsule.getLatestConsumeTime();
-    long netLimit = calculateGlobalNetLimit(accountCapsule);
+    long latestConsumeSlot = accountCapsule.getLatestConsumeTime();
+    long netLimit = calculateGlobalNetLimit(accountCapsule); // 质押的带宽
     long newNetUsage;
     if (!dynamicPropertiesStore.supportUnfreezeDelay()) {
-      newNetUsage = increase(netUsage, 0, latestConsumeTime, now);
+      newNetUsage = increase(netUsage, 0, latestConsumeSlot, nowSlot);
     } else {
       // only participate in the calculation as a temporary variable, without disk flushing
-      newNetUsage = recovery(accountCapsule, BANDWIDTH, netUsage, latestConsumeTime, now);
+      newNetUsage = recovery(accountCapsule, BANDWIDTH, netUsage, latestConsumeSlot, nowSlot);
     }
 
     long netCost = bytes * createNewAccountBandwidthRatio;
     if (netCost <= (netLimit - newNetUsage)) {
       long latestOperationTime = chainBaseManager.getHeadBlockTimeStamp();
       if (!dynamicPropertiesStore.supportUnfreezeDelay()) {
-        newNetUsage = increase(newNetUsage, netCost, now, now);
+        newNetUsage = increase(newNetUsage, netCost, nowSlot, nowSlot);
       } else {
         // Participate in calculation and flush disk persistence
         newNetUsage = increase(accountCapsule, BANDWIDTH,
-            netUsage, netCost, latestConsumeTime, now);
+            netUsage, netCost, latestConsumeSlot, nowSlot);
       }
-      accountCapsule.setLatestConsumeTime(now);
+      accountCapsule.setLatestConsumeTime(nowSlot);
       accountCapsule.setLatestOperationTime(latestOperationTime);
       accountCapsule.setNetUsage(newNetUsage);
 
@@ -321,6 +322,7 @@ public class BandwidthProcessor extends ResourceProcessor {
     long newPublicFreeAssetNetUsage = increase(publicFreeAssetNetUsage, 0,
         publicLatestFreeNetTime, now);
 
+    // 先检查发币账户的免费带宽
     if (bytes > (publicFreeAssetNetLimit - newPublicFreeAssetNetUsage)) {
       logger.debug("The {} public free bandwidth is not enough."
               + " Bytes: {}, publicFreeAssetNetLimit: {}, newPublicFreeAssetNetUsage: {}.",
@@ -429,6 +431,7 @@ public class BandwidthProcessor extends ResourceProcessor {
 
   }
 
+  // 获取质押的带宽
   public long calculateGlobalNetLimit(AccountCapsule accountCapsule) {
     long frozeBalance = accountCapsule.getAllFrozenBalanceForBandwidth();
     if (dynamicPropertiesStore.supportUnfreezeDelay()) {

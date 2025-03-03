@@ -104,11 +104,11 @@ public class PbftMessageHandle {
   }
 
   public void onPrePrepare(PbftMessage message) {
-    String key = message.getNo();
+    String key = message.getNo();//block块号
     if (message.isSwitch()) {//if is block chain switch,remove the before proposal
       logger.warn("block chain switch, again proposal block num: {}, data: {}",
           message.getNumber(), message.getDataString());
-      remove(key);
+      remove(key); // 清掉之前相同的被切掉的block pbft提交数据
       return;
     }
     if (preVotes.contains(key)) {
@@ -118,13 +118,15 @@ public class PbftMessageHandle {
     preVotes.add(key);
     //Start timeout control
     timeOuts.put(key, System.currentTimeMillis());
-    //
+    // 清除掉 prepareMsgCache 因为如果之前没有prePrepare记录但是有PrePare一定是异常
     checkPrepareMsgCache(key);
     //Into the preparation phase, if not the sr node does not need to be prepared
     long epoch = message.getPbftMessage().getRawData().getEpoch();
     if (!checkIsCanSendMsg(epoch)) {
       return;
     }
+
+    // 给节点的每个 SR miner都加上签名 然后转发其他 SR 节点
     for (Miner miner : getSrMinerList(epoch)) {
       PbftMessage paMessage = message.buildPrePareMessage(miner);
       forwardMessage(paMessage);
@@ -141,7 +143,7 @@ public class PbftMessageHandle {
   }
 
   public synchronized void onPrepare(PbftMessage message) {
-    String key = message.getKey();
+    String key = message.getKey(); // 块号+SR公钥
 
     if (!preVotes.contains(message.getNo())) {
       //Must be prepared in advance
@@ -158,7 +160,7 @@ public class PbftMessageHandle {
       return;
     }
     pareVoteMap.put(key, message);
-    //
+    // 清除掉 commitMsgCache 因为如果之前没有prepare记录但是有commit一定是异常
     checkCommitMsgCache(message.getNo());
     long epoch = message.getPbftMessage().getRawData().getEpoch();
     if (!checkIsCanSendMsg(epoch)) {

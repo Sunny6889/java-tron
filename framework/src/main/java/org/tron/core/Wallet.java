@@ -504,6 +504,7 @@ public class Wallet {
     trx.setTime(System.currentTimeMillis());
     Sha256Hash txID = trx.getTransactionId();
     try {
+      // 如果设置非固化块检查，但是非固化块超过限制了
       if (tronNetDelegate.isBlockUnsolidified()) {
         logger.warn("Broadcast transaction {} has failed, block unsolidified.", txID);
         return builder.setResult(false).setCode(response_code.BLOCK_UNSOLIDIFIED)
@@ -511,7 +512,9 @@ public class Wallet {
           .build();
       }
 
+      // 有效节点数量检查
       if (minEffectiveConnection != 0) {
+        // 活跃peer节点是空的
         if (tronNetDelegate.getActivePeer().isEmpty()) {
           logger.warn("Broadcast transaction {} has failed, no connection.", txID);
           return builder.setResult(false).setCode(response_code.NO_CONNECTION)
@@ -519,6 +522,7 @@ public class Wallet {
               .build();
         }
 
+        // 排除在同步中的peers
         int count = (int) tronNetDelegate.getActivePeer().stream()
             .filter(p -> !p.isNeedSyncFromUs() && !p.isNeedSyncFromPeer())
             .count();
@@ -533,12 +537,14 @@ public class Wallet {
         }
       }
 
+      // pending 要处理的 transaction 比较多
       if (dbManager.isTooManyPending()) {
         logger.warn("Broadcast transaction {} has failed, too many pending.", txID);
         return builder.setResult(false).setCode(response_code.SERVER_BUSY)
             .setMessage(ByteString.copyFromUtf8("Server busy.")).build();
       }
 
+      // 重复处理交易txID检查
       if (trxCacheEnable) {
         if (dbManager.getTransactionIdCache().getIfPresent(txID) != null) {
           logger.warn("Broadcast transaction {} has failed, it already exists.", txID);
@@ -549,15 +555,20 @@ public class Wallet {
         }
       }
 
+      //初始化transaction的result，为执行智能合约做准备
       if (chainBaseManager.getDynamicPropertiesStore().supportVM()) {
         trx.resetResult();
       }
       if (trx.getInstance().getRawData().getContractCount() == 0) {
         throw new ContractValidateException(ActuatorConstant.CONTRACT_NOT_EXIST);
       }
+      // 检查交易是否会在下个产块前过期
       TransactionMessage message = new TransactionMessage(trx.getInstance().toByteArray());
       trx.checkExpiration(chainBaseManager.getNextBlockSlotTime());
+      //预执行交易，将交易放入pending列表
       dbManager.pushTransaction(trx);
+
+      // 广播给其他节点，会去重检查
       int num = tronNetService.fastBroadcastTransaction(message);
       if (num == 0 && minEffectiveConnection != 0) {
         return builder.setResult(false).setCode(response_code.NOT_ENOUGH_EFFECTIVE_CONNECTION)

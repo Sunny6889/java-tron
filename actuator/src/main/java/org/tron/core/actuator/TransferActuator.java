@@ -57,12 +57,14 @@ public class TransferActuator extends AbstractActuator {
         fee = fee + dynamicStore.getCreateNewAccountFeeInSystemContract();
       }
 
+      // 从 ownerAddress扣掉 amount
       adjustBalance(accountStore, ownerAddress, -(addExact(fee, amount)));
       if (dynamicStore.supportBlackHoleOptimization()) {
         dynamicStore.burnTrx(fee);
       } else {
         adjustBalance(accountStore, accountStore.getBlackhole(), fee);
       }
+      // 从 toAddress增加 amount
       adjustBalance(accountStore, toAddress, amount);
       ret.setStatus(fee, code.SUCESS);
     } catch (BalanceInsufficientException | ArithmeticException | InvalidProtocolBufferException e) {

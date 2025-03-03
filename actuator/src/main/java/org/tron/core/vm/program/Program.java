@@ -1896,7 +1896,7 @@ public class Program {
 
   public boolean freezeBalanceV2(DataWord frozenBalance, DataWord resourceType) {
     Repository repository = getContractState().newRepositoryChild();
-    byte[] owner = getContextAddress();
+    byte[] owner = getContextAddress(); //合约账户
 
     increaseNonce();
     InternalTransaction internalTx = addInternalTx(null, owner, owner,

@@ -23,6 +23,7 @@ public class BroadcastServlet extends RateLimiterServlet {
   protected void doPost(HttpServletRequest request, HttpServletResponse response) {
     try {
       PostParams params = PostParams.getPostParams(request);
+      // 获取交易类型等信息
       Transaction transaction = Util.packTransaction(params.getParams(), params.isVisible());
       TransactionCapsule transactionCapsule = new TransactionCapsule(transaction);
       String transactionID = ByteArray

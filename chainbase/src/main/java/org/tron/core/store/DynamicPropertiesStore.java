@@ -2074,6 +2074,7 @@ public class DynamicPropertiesStore extends TronStoreWithRevoking<BytesCapsule> 
     return ChainConstant.BLOCK_FILLED_SLOTS_NUMBER;
   }
 
+  // 每次节点收到一个区块并成功处理完，调用下面统计逻辑
   public void applyBlock(boolean fillBlock) {
     int[] blockFilledSlots = getBlockFilledSlots();
     int blockFilledSlotsIndex = getBlockFilledSlotsIndex();
@@ -2227,7 +2228,7 @@ public class DynamicPropertiesStore extends TronStoreWithRevoking<BytesCapsule> 
 
     long currentMaintenanceTime = getNextMaintenanceTime();
     long round = (blockTime - currentMaintenanceTime) / maintenanceTimeInterval;
-    long nextMaintenanceTime = currentMaintenanceTime + (round + 1) * maintenanceTimeInterval;
+    long nextMaintenanceTime = currentMaintenanceTime + (round + 1) * maintenanceTimeInterval; // = blockTime + maintenanceTimeInterval
     saveNextMaintenanceTime(nextMaintenanceTime);
 
     logger.info(

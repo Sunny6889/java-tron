@@ -125,7 +125,7 @@ public class DposService implements ConsensusInterface {
     }
     long bSlot = dposSlot.getAbSlot(timeStamp);
     long hSlot = dposSlot.getAbSlot(consensusDelegate.getLatestBlockHeaderTimestamp());
-    if (bSlot <= hSlot) {
+    if (bSlot <= hSlot) { //如果是比本地最新区块旧就抛弃
       logger.warn("ValidBlock failed: bSlot: {} <= hSlot: {}", bSlot, hSlot);
       return false;
     }
@@ -162,7 +162,7 @@ public class DposService implements ConsensusInterface {
         .sorted()
         .collect(Collectors.toList());
     long size = consensusDelegate.getActiveWitnesses().size();
-    int position = (int) (size * (1 - SOLIDIFIED_THRESHOLD * 1.0 / 100));
+    int position = (int) (size * (1 - SOLIDIFIED_THRESHOLD * 1.0 / 100)); // 如果更改了MAX_ACTIVE_WITNESS_NUM计算公司还准确吗？
     long newSolidNum = numbers.get(position);
     long oldSolidNum = consensusDelegate.getLatestSolidifiedBlockNum();
     if (newSolidNum < oldSolidNum) {
@@ -176,7 +176,7 @@ public class DposService implements ConsensusInterface {
   }
 
   public void updateWitness(List<ByteString> list) {
-    consensusDelegate.sortWitness(list);
+    consensusDelegate.sortWitness(list); // 按照得票数，从高到低排序
     if (list.size() > MAX_ACTIVE_WITNESS_NUM) {
       consensusDelegate
           .saveActiveWitnesses(list.subList(0, MAX_ACTIVE_WITNESS_NUM));

@@ -172,7 +172,7 @@ import org.tron.protos.contract.BalanceContract;
 
 @Slf4j(topic = "DB")
 @Component
-public class Manager {
+public class Manager { //交易及区块校验并处理逻辑
 
   private static final int SHIELDED_TRANS_IN_BLOCK_COUNTS = 1;
   private static final String SAVE_BLOCK = "Save block: {}";
@@ -190,10 +190,10 @@ public class Manager {
   @Autowired
   private TransactionCache transactionCache;
   @Autowired
-  private KhaosDatabase khaosDb;
+  private KhaosDatabase khaosDb; // 不可回滚数据库
   @Getter
   @Autowired
-  private RevokingDatabase revokingStore;
+  private RevokingDatabase revokingStore; // 可回滚数据库的管理机制
   @Getter
   private SessionOptional session = SessionOptional.instance();
   @Getter
@@ -232,7 +232,7 @@ public class Manager {
   private Consensus consensus;
   @Autowired
   @Getter
-  private ChainBaseManager chainBaseManager;
+  private ChainBaseManager chainBaseManager; // 管理数据存储所需的各类数据库，单例
   // transactions cache
   private BlockingQueue<TransactionCapsule> pendingTransactions;
   @Getter
@@ -711,9 +711,9 @@ public class Manager {
   private void initAutoStop() {
     final long headNum = chainBaseManager.getHeadBlockNum();
     final long headTime = chainBaseManager.getHeadBlockTimeStamp();
-    final long exitHeight = CommonParameter.getInstance().getShutdownBlockHeight();
-    final long exitCount = CommonParameter.getInstance().getShutdownBlockCount();
-    final CronExpression blockTime = Args.getInstance().getShutdownBlockTime();
+    final long exitHeight = CommonParameter.getInstance().getShutdownBlockHeight(); // 初始-1
+    final long exitCount = CommonParameter.getInstance().getShutdownBlockCount();// 初始-1
+    final CronExpression blockTime = Args.getInstance().getShutdownBlockTime(); // null
 
     if (exitHeight > 0 && exitHeight < headNum) {
       throw new IllegalArgumentException(
@@ -773,6 +773,7 @@ public class Manager {
     return chainBaseManager.getAccountIndexStore();
   }
 
+  //Tapos (Transaction as Proof of Stake，基于交易的权益证明机制)
   void validateTapos(TransactionCapsule transactionCapsule) throws TaposException {
     byte[] refBlockHash = transactionCapsule.getInstance()
         .getRawData().getRefBlockHash().toByteArray();
@@ -1012,7 +1013,7 @@ public class Manager {
           getDynamicPropertiesStore().getLatestBlockHeaderHash());
       logger.info("Start to erase block: {}.", oldHeadBlock);
       khaosDb.pop();
-      revokingStore.fastPop();
+      revokingStore.fastPop(); // SnapshotManager把所有的Chainbase回退一步
       logger.info("End to erase block: {}.", oldHeadBlock);
       oldHeadBlock.getTransactions().forEach(tc ->
           poppedTransactions.add(new TransactionCapsule(tc.getInstance())));
@@ -1112,6 +1113,7 @@ public class Manager {
       throw e;
     }
 
+    // 回滚当下分支直到共同的区块节点
     if (CollectionUtils.isNotEmpty(binaryTree.getValue())) {
       while (!getDynamicPropertiesStore()
           .getLatestBlockHeaderHash()
@@ -1240,6 +1242,7 @@ public class Manager {
         Metrics.histogramObserve(blockedTimer.get());
         blockedTimer.remove();
         long headerNumber = getDynamicPropertiesStore().getLatestBlockHeaderNumber();
+        // 如果发生切链，比当前节点小的区块，第一次检查该逻辑khaosDb不存在，下面逻辑会存放
         if (block.getNum() <= headerNumber && khaosDb.containBlockInMiniStore(block.getBlockId())) {
           logger.info("Block {} is already exist.", block.getBlockId().getString());
           return;
@@ -1353,7 +1356,11 @@ public class Manager {
           }
           logger.info(SAVE_BLOCK, newBlock);
         }
-        //clear ownerAddressSet
+        /*
+        在应用新的区块时clear ownerAddressSet，
+        但是有[待处理交易的账户]在[刚刚上面applyBlock的交易中]发起过更改权限的交易，再加入到ownerAddressSet,
+        这个会使交易处理时再次验签，防止在新区块中更改的权限跟未处理的交易发生竞争
+         */
         if (CollectionUtils.isNotEmpty(ownerAddressSet)) {
           Set<String> result = new HashSet<>();
           for (TransactionCapsule transactionCapsule : rePushTransactions) {
@@ -1481,16 +1488,19 @@ public class Manager {
 
     long start = System.currentTimeMillis();
 
+    // 是否在一个 block 里面
     if (Objects.nonNull(blockCap)) {
       chainBaseManager.getBalanceTraceStore().initCurrentTransactionBalanceTrace(trxCap);
       trxCap.setInBlock(true);
     }
 
+    // 验证一下 ref block 是否存在
     validateTapos(trxCap);
+    // 大小和过期时间检查
     validateCommon(trxCap);
-
+    // 是否重复
     validateDup(trxCap);
-
+    // 验证签名和多签 weight 是否足够
     if (!trxCap.validateSignature(chainBaseManager.getAccountStore(),
         chainBaseManager.getDynamicPropertiesStore())) {
       throw new ValidateSignatureException(
@@ -1547,6 +1557,7 @@ public class Manager {
     }
 
 
+    // 如果是涉及到多个签名的交易，目前有AccountPermissionUpdateContract
     if (isMultiSignTransaction(trxCap.getInstance())) {
       ownerAddressSet.add(ByteArray.toHexString(trxCap.getOwnerAddress()));
     }
@@ -1581,21 +1592,21 @@ public class Manager {
   public BlockCapsule generateBlock(Miner miner, long blockTime, long timeout) {
     String address =  StringUtil.encode58Check(miner.getWitnessAddress().toByteArray());
     final Histogram.Timer timer = Metrics.histogramStartTimer(
-        MetricKeys.Histogram.BLOCK_GENERATE_LATENCY, address);
+        MetricKeys.Histogram.BLOCK_GENERATE_LATENCY, address); // 开始计时
     Metrics.histogramObserve(MetricKeys.Histogram.MINER_DELAY,
         (System.currentTimeMillis() - blockTime) / Metrics.MILLISECONDS_PER_SECOND, address);
-    long postponedTrxCount = 0;
+    long postponedTrxCount = 0; // 推迟的交易数量
     logger.info("Generate block {} begin.", chainBaseManager.getHeadBlockNum() + 1);
-
     BlockCapsule blockCapsule = new BlockCapsule(chainBaseManager.getHeadBlockNum() + 1,
         chainBaseManager.getHeadBlockId(),
         blockTime, miner.getWitnessAddress());
     blockCapsule.generatedByMyself = true;
     session.reset();
-    session.setValue(revokingStore.buildSession());
+    session.setValue(revokingStore.buildSession()); // SnapShotManager把所有的 Chainbase往前推进一下链表头header
 
-    accountStateCallBack.preExecute(blockCapsule);
+    accountStateCallBack.preExecute(blockCapsule); // 账户状态树设置 root 为前一个区块的AccountStateRoot
 
+    // 检查一下该节点是否有出块的权限
     if (getDynamicPropertiesStore().getAllowMultiSign() == 1) {
       byte[] privateKeyAddress = miner.getPrivateKeyAddress().toByteArray();
       AccountCapsule witnessAccount = getAccountStore()
@@ -1669,6 +1680,7 @@ public class Manager {
       //multi sign transaction
       byte[] owner = trx.getOwnerAddress();
       String ownerAddress = ByteArray.toHexString(owner);
+      // 有权限修改的账户在一个区块只能有一个交易，其它交易会跳过
       if (accountSet.contains(ownerAddress)) {
         continue;
       } else {
@@ -1676,6 +1688,7 @@ public class Manager {
           accountSet.add(ownerAddress);
         }
       }
+      // 如果有pending交易涉及到多签，产块时需要再次去验证签名
       if (ownerAddressSet.contains(ownerAddress)) {
         trx.setVerified(false);
       }
@@ -1871,9 +1884,10 @@ public class Manager {
             .getRawData().getWitnessAddress().toByteArray());
     if (getDynamicPropertiesStore().allowChangeDelegation()) {
       mortgageService.payBlockReward(witnessCapsule.getAddress().toByteArray(),
-          getDynamicPropertiesStore().getWitnessPayPerBlock());
-      mortgageService.payStandbyWitness();
+          getDynamicPropertiesStore().getWitnessPayPerBlock()); // 16TRX产块奖励
+      mortgageService.payStandbyWitness(); // 160个给前127名的SR
 
+      // 是否支持交易费用池，目前还没有开启
       if (chainBaseManager.getDynamicPropertiesStore().supportTransactionFeePool()) {
         long transactionFeeReward = floorDiv(
             chainBaseManager.getDynamicPropertiesStore().getTransactionFeePool(),

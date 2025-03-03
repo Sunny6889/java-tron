@@ -111,6 +111,7 @@ public class VMActuator implements Actuator2 {
         .divide(BigInteger.valueOf(callerEnergyTotal)).longValueExact();
   }
 
+  //validate: 负责验证交易的正确性
   @Override
   public void validate(Object object) throws ContractValidateException {
 
@@ -598,17 +599,19 @@ public class VMActuator implements Actuator2 {
       long callValue) {
 
     long sunPerEnergy = VMConstant.SUN_PER_ENERGY;
-    if (rootRepository.getDynamicPropertiesStore().getEnergyFee() > 0) {
+    if (rootRepository.getDynamicPropertiesStore().getEnergyFee() > 0) { // #11 提案，目前是 210sun = 1 enegry
       sunPerEnergy = rootRepository.getDynamicPropertiesStore().getEnergyFee();
     }
-    // can change the calc way
+    // 通过24h Decay计算账户可用的energy
     long leftEnergyFromFreeze = rootRepository.getAccountLeftEnergyFromFreeze(account);
     boolean isStrict2 = VMConfig.disableJavaLangMath();
     callValue = max(callValue, 0, isStrict2);
+    // 计算账户balance减去此次交易转移的TRX能换算多少energy
     long energyFromBalance = floorDiv(max(
         account.getBalance() - callValue, 0, isStrict2), sunPerEnergy, isStrict2);
 
     long energyFromFeeLimit;
+    // 通过质押或者代理获取energy的 TRX 余额
     long totalBalanceForEnergyFreeze = account.getAllFrozenBalanceForEnergy();
     if (0 == totalBalanceForEnergyFreeze) {
       energyFromFeeLimit =
