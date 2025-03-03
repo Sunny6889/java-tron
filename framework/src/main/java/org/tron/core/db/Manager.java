@@ -1509,8 +1509,9 @@ public class Manager {
     trace.checkIsConstant();
     trace.exec();
 
+    // 如果是广播的交易
     if (Objects.nonNull(blockCap)) {
-      trace.setResult();
+      trace.setResult();// 如果是需要VM，设置交易费用receipt
       if (trace.checkNeedRetry()) {
         trace.init(blockCap, eventPluginLoaded);
         trace.checkIsConstant();
@@ -1524,7 +1525,7 @@ public class Manager {
       }
     }
 
-    trace.finalization();
+    trace.finalization(); // 支付费用
     if (getDynamicPropertiesStore().supportVM()) {
       trxCap.setResult(trace.getTransactionContext());
     }
