@@ -2495,7 +2495,7 @@ public class Manager {
     stopFilterProcessThread();
     stopValidateSignThread();
     chainBaseManager.shutdown();
-    revokingStore.shutdown();
+  revokingStore.shutdown();
     session.reset();
   }
 
