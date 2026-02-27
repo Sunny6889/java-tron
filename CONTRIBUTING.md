@@ -1,159 +1,190 @@
 # Contributing to java-tron
 
-java-tron is an open-source project which needs the support of open-source contributors.
+Thank you for considering contributing to java-tron! We welcome contributions from anyone and are grateful for even the smallest fixes.
 
-Below are the instructions. We understand that there is much left to be desired, and if you see any room for improvement, please let us know. Thank you.
+java-tron is an open-source project that thrives on community support. This guide will help you contribute effectively. If you have suggestions for improving this guide, please let us know.
 
-Here are some guidelines to get started quickly and easily:
-- [Reporting An Issue](#Reporting-An-Issue)
-- [Working on java-tron](#Working-on-java-tron)
-  - [Key Branches](#Key-Branches)
-  - [Submitting Code](#Submitting-Code)
-- [Code Review Guidelines](#Code-Review-Guidelines)
-  - [Terminology](#Terminology)
-  - [The Process](#The-Process)
-  - [Code Style](#Code-Style)
-  - [Commit Messages](#Commit-Messages)
-  - [Branch Naming Conventions](#Branch-Naming-Conventions)
-  - [Pull Request Guidelines](#Pull-Request-Guidelines)
-  - [Special Situations And How To Deal With Them](#Special-Situations-And-How-To-Deal-With-Them)
-- [Conduct](#Conduct)
+## Table of Contents
 
+- [Reporting An Issue](#reporting-an-issue)
+- [Working on java-tron](#working-on-java-tron)
+  - [Contribution Types](#contribution-types)
+  - [Key Branches](#key-branches)
+  - [Submitting Code](#submitting-code)
+- [Code Review Guidelines](#code-review-guidelines)
+  - [Terminology](#terminology)
+  - [The Process](#the-process)
+  - [Code Style](#code-style)
+  - [Commit Messages](#commit-messages)
+  - [Branch Naming Conventions](#branch-naming-conventions)
+  - [Pull Request Guidelines](#pull-request-guidelines)
+  - [Special Situations](#special-situations-and-how-to-deal-with-them)
+- [Code of Conduct](#code-of-conduct)
 
-### Reporting An Issue
+## Reporting An Issue
 
-If you're about to raise an issue because you think you've found a problem or bug with java-tron, please respect the following restrictions:
+Before raising an issue, please follow these guidelines:
 
-- Please search for existing issues. Help us keep duplicate issues to a minimum by checking to see if someone has already reported your problem or requested your idea.
+- **Search for existing issues** - Help us avoid duplicates by checking if someone has already reported your problem or requested your feature.
 
-- Use the Issue Report Template below.
+- **Use the Issue Report Template** - Provide clear information using this format:
     ```
-    1.What did you do? 
+    1. What did you do?
 
-    2.What did you expect to see? 
+    2. What did you expect to see?
 
-    3.What did you see instead?
+    3. What did you see instead?
     ```
-
 
 ## Working on java-tron
-Thank you for considering to help out with the source code! We welcome contributions from anyone on the internet, and are grateful for even the smallest of fixes!
 
-If you’d like to contribute to java-tron, for small fixes, we recommend that you send a pull request (PR) for the maintainers to review and merge into the main code base, make sure the PR contains a detailed description. For more complex changes, you need to submit an issue to the TIP repository to detail your motive and implementation plan, etc. For how to submit a TIP issue, please refer to [TIP Specification](https://github.com/tronprotocol/tips#to-submit-a-tip).
+### Contribution Types
 
+**For small fixes:**
+- Submit a pull request (PR) directly with a detailed description
+- Maintainers will review and merge into the main codebase
 
-As the author of TIP issue, you are expected to encourage developers to discuss this issue, flesh out your issue by collecting their feedback, and eventually put your issue into practice.
-
+**For complex changes:**
+- Submit a TIP (TRON Improvement Proposal) issue first
+- Detail your motivation and implementation plan
+- Refer to the [TIP Specification](https://github.com/tronprotocol/tips#to-submit-a-tip) for submission guidelines
 
 ### Key Branches
-java-tron only has `master`, `develop`, `release-*`, `feature-*`, and `hotfix-*` branches, which are described below:
 
-- ``develop`` branch  
-  The `develop` branch only accept merge request from other forked branches or`release_*` branches. It is not allowed to directly push changes to the `develop` branch. A `release_*` branch has to be pulled from the develop branch when a new build is to be released.
+java-tron uses the following branch structure:
 
-- ``master`` branch  
-  `release_*` branches and `hotfix/*` branches should only be merged into the `master` branch when a new build is released.
+- **`develop` branch**  
+  - Accepts merge requests from forked branches or `release_*` branches only
+  - Direct pushes are not allowed
+  - Source branch for creating new `release_*` branches
 
-- ``release`` branch  
-  `release_*` is a branch pulled from the `develop` branch for release. It should be merged into `master` after a regression test and will be permanently kept in the repository. If a bug is identified in a `release_*` branch, its fixes should be directly merged into the branch. After passing the regression test, the `release_*` branch should be merged back into the `develop` branch. Essentially, a `release_*` branch serves as a snapshot for each release.
+- **`master` branch**  
+  - Receives merges from `release_*` and `hotfix/*` branches only
+  - Updated only when a new build is released
+  - Represents the production-ready state
 
-- ``feature`` branch  
-  `feature/*` is an important feature branch pulled from the `develop` branch. After the `feature/*` branch is code-complete, it should be merged back to the `develop` branch. The `feature/*` branch is maintainable.
+- **`release_*` branch**  
+  - Created from `develop` for each release
+  - Merged into `master` after passing regression tests
+  - Permanently kept in the repository as a release snapshot
+  - Bug fixes can be applied directly to this branch
+  - After regression tests, merged back into `develop`
 
-- ``hotfix`` branch  
-  It is pulled from the `master` branch and should be merged back into the master branch and the `develop` branch. Only pull requests of the fork repository (pull requests for bug fixes) should be merged into the `hotfix/` branch. `hotfix/` branches are used only for fixing bugs found after release.
+- **`feature/*` branch**  
+  - Created from `develop` for new feature development
+  - Merged back to `develop` when code-complete
+  - Maintained throughout the feature development lifecycle
 
+- **`hotfix/*` branch**  
+  - Created from `master` for urgent production bug fixes
+  - Merged back into both `master` and `develop` branches
+  - Used exclusively for fixing critical bugs found after release
+  - Only accepts pull requests for bug fixes from forked repositories
 
 ### Submitting Code
 
-If you want to contribute codes to java-tron, please follow the following steps:
+Follow these steps to contribute code to java-tron:
 
-* Fork code repository
-  Fork a new repository from tronprotocol/java-tron to your personal code repository
+**1. Fork the repository**
+   - Fork tronprotocol/java-tron to your personal GitHub account
 
-* Edit the code in the fork repository
-    ```
+**2. Clone and configure your fork**
+    ```bash
     git clone https://github.com/yourname/java-tron.git
-
-    git remote add upstream https://github.com/tronprotocol/java-tron.git     ("upstream" refers to upstream projects repositories, namely tronprotocol's repositories, and can be named as you like it. We usually call it "upstream" for convenience) 
-    ```
-  Before developing new features, please synchronize your fork repository with the upstream repository.
-    ```
-    git fetch upstream 
-    git checkout develop 
-    git merge upstream/develop --no-ff (Add --no-ff to turn off the default fast merge mode)
+    git remote add upstream https://github.com/tronprotocol/java-tron.git
     ```
 
-  Pull a new branch from the develop branch of your repository for local development. Please refer to [Branch Naming Conventions](#Branch-Naming-Conventions),
+**3. Synchronize with upstream**
+   Before developing, sync your fork with the upstream repository:
+    ```bash
+    git fetch upstream
+    git checkout develop
+    git merge upstream/develop --no-ff  # Disable fast-forward merge
     ```
+
+**4. Create a feature branch**
+   Create a new branch from `develop` (see [Branch Naming Conventions](#branch-naming-conventions)):
+    ```bash
     git checkout -b feature/branch_name develop
     ```
 
-  Write and commit the new code when it is completed. Please refer to [Commit Messages](#Commit-Messages)
-     ```
-     git add .
-     git commit -m 'commit message'
-     ```
-  Commit the new branch to your personal remote repository
-     ```
-     git push origin feature/branch_name
-     ```
+**5. Develop and commit**
+   Write your code and commit changes (see [Commit Messages](#commit-messages)):
+    ```bash
+    git add .
+    git commit -m 'commit message'
+    ```
 
-* Push code
+**6. Push to your fork**
+    ```bash
+    git push origin feature/branch_name
+    ```
 
-  Submit a pull request (PR) from your repository to `tronprotocol/java-tron`.
-  Please be sure to click on the link in the red box shown below. Select the base branch for tronprotocol and the compare branch for your personal fork repository.
-  ![image](https://raw.githubusercontent.com/tronprotocol/documentation-en/master/images/javatron_pr.png)
-
-
+**7. Create a pull request**
+   - Submit a PR from your fork to `tronprotocol/java-tron`
+   - Select the appropriate base branch (usually `develop`)
+   - Select your feature branch as the compare branch
+   - ![PR Guide](https://raw.githubusercontent.com/tronprotocol/documentation-en/master/images/javatron_pr.png)
 
 ## Code Review Guidelines
-The only way to get code into java-tron is to send a pull request. Those pull requests need to be reviewed by someone. The following guide explains our expectations around PRs for both authors and reviewers.
+
+All code changes must go through the pull request review process. This section outlines expectations for both PR authors and reviewers.
 
 ### Terminology
-- The author of a pull request is the entity who wrote the diff and submitted it to GitHub.
-- The team consists of people with commit rights on the java-tron repository.
-- The reviewer is the person assigned to review the diff. The reviewer must be a team member.
-- The code owner is the person responsible for the subsystem being modified by the PR.
+
+- **Author**: The entity who wrote the diff and submitted it to GitHub
+- **Team**: People with commit rights on the java-tron repository
+- **Reviewer**: The person assigned to review the diff (must be a team member)
+- **Code owner**: The person responsible for the subsystem being modified
 
 ### The Process
-The first decision to make for any PR is whether it’s worth including at all. This decision lies primarily with the code owner, but may be negotiated with team members.
 
-To make the decision we must understand what the PR is about. If there isn’t enough description content or the diff is too large, request an explanation. Anyone can do this part.
+**Initial Assessment:**
+- Code owners evaluate PR inclusion based on adequate descriptions and reasonable diff sizes
+- Anyone can request clarification when needed
 
-We expect that reviewers check the style and functionality of the PR, providing comments to the author using the GitHub review system. Reviewers should follow up with the PR until it is in good shape, then approve the PR. Approved PRs can be merged by any code owner.
+**Review Responsibilities:**
+- Reviewers verify code style and functionality
+- Provide constructive feedback through GitHub's review system
+- Maintain professional communication throughout the process
+- Follow up until quality standards are met
+- Approve when ready for merge
 
-When communicating with authors, be polite and respectful.
+**Merging:**
+- Code owners merge approved PRs
 
 ### Code Style
-We would like all developers to follow a standard development flow and coding style. Therefore, we suggest the following:
-1. Review the code with coding style checkers.
-2. Review the code before submission.
-3. Run standardized tests.
 
-`Sonar`-scanner and `Travis CI` continuous integration scanner will be automatically triggered when a pull request has been submitted. When a PR passes all the checks, the **java-tron** maintainers will then review the PR and offer feedback and modifications when necessary.  Once adopted, the PR will be closed and merged into the `develop` branch.
+**Before Submitting:**
+1. Use coding style checkers to review your code
+2. Perform a self-review before submission
+3. Run all standardized tests
 
-We are glad to receive your pull requests and will try our best to review them as soon as we can. Any pull request is welcome, even if it is for a typo.
+**Automated Checks:**
+- Sonar scanner and Travis CI run automatically on all PRs
+- PRs must pass all checks before maintainer review
 
-Please kindly address the issue you find. We would appreciate your contribution.
+**Review Process:**
+- Maintainers provide feedback and request modifications as needed
+- Approved PRs are merged into the `develop` branch
+- All contributions are welcome, including typo fixes
 
-Please do not be discouraged if your pull request is not accepted, as it may be an oversight. Please explain your code as detailed as possible to make it easier to understand.
+**If Your PR is Not Accepted:**
+- Don't be discouraged - it may be an oversight
+- Provide detailed explanations to help reviewers understand your changes
+- Address feedback constructively
 
-Please make sure your submission meets the following code style:
-
-- The code must conform to [Google Code Style](https://google.github.io/styleguide/javaguide.html).
-- The code must have passed the Sonar scanner test.
-- The code has to be pulled from the `develop` branch.
-- The commit message should start with a verb, whose initial should not be capitalized.
-- The commit message should be less than 50 characters in length.
-
-
+**Code Style Requirements:**
+- Code must conform to [Google Java Style Guide](https://google.github.io/styleguide/javaguide.html)
+- Code must pass Sonar scanner tests
+- Branches must be created from `develop`
+- Commit messages must start with a lowercase verb
+- Commit subject lines must be 50 characters or less
 
 ### Commit Messages
 
-Commit messages should follow the rule below, we provide a template with corresponding instructions.
+Follow this template for all commit messages:
 
-Template:
 ```
 <commit type>(<scope>): <subject>
 <BLANK LINE>
@@ -162,9 +193,10 @@ Template:
 <footer>
 ```
 
-The message header is a single line that contains succinct description of the change containing a `commit type`, an optional `scope` and a subject.
+**Header Format:**
+A single line containing the commit type, optional scope, and subject.
 
-`commit type` describes the kind of change that this commit is providing:
+**Commit Types:**
 * feat     (new feature)
 * fix      (bug fix)
 * docs     (changes to documentation)
@@ -173,18 +205,27 @@ The message header is a single line that contains succinct description of the ch
 * test     (adding or refactoring tests. no production code change)
 * chore    (updating grunt tasks etc. no production code change)
 
-The `scope` can be anything specifying place of the commit change. For example:`protobuf`,`api`,`test`,`docs`,`build`,`db`,`net`.You can use * if there isn't a more fitting scope.
+**Scope:**
+Specifies the area of change (e.g., `protobuf`, `api`, `test`, `docs`, `build`, `db`, `net`). Use `*` if no specific scope applies.
 
-The subject contains a succinct description of the change:
-1. Limit the subject line, which briefly describes the purpose of the commit, to 50 characters.
-2. Start with a verb and use first-person present-tense (e.g., use "change" instead of "changed" or "changes").
-3. Do not capitalize the first letter.
-4. Do not end the subject line with a period.
-5. Avoid meaningless commits. It is recommended to use the git rebase command.
+**Subject Guidelines:**
+1. Limit to 50 characters
+2. Use imperative, present tense (e.g., "change" not "changed" or "changes")
+3. Start with a lowercase letter
+4. Do not end with a period
+5. Avoid meaningless commits (use `git rebase` to clean up)
 
-Message body uses the imperative, present tense: "change" not "changed" nor "changes". The body should include the motivation for the change and contrast this with previous behavior.
+**Body:**
+- Use imperative, present tense
+- Explain the motivation for the change
+- Contrast with previous behavior
 
-Here is an example:
+**Footer:**
+Reference related issues using the `Closes` keyword:
+- Single issue: `Closes #1234`
+- Multiple issues: `Closes #123, #245, #992`
+
+**Example:**
 ```
 feat(block): optimize the block-producing logic
 
@@ -193,53 +234,55 @@ feat(block): optimize the block-producing logic
 
 Closes #1234
 ```
-If the purpose of this submission is to modify one issue, you need to refer to the issue in the footer, starting with the keyword Closes, such as `Closes #1234`,if multiple bugs have been modified, separate them with commas,such as `Closes #123, #245, #992`.
-
-
 
 ### Branch Naming Conventions
-1. Always name the `master` branch and `develop` branch as "master" and "develop".
-2. Name the `release_*` branch using version numbers, which are assigned by the project lead (e.g., Odyssey-v3.1.3, 3.1.3, etc.).
-3. Use `hotfix/` as the prefix of the `hotfix` branch, briefly describe the bug in the name, and connect words with underline (e.g., hotfix/typo, hotfix/null_point_exception, etc.).
-4. Use `feature/` as the prefix of the `feature` branch, briefly describe the feature in the name, and connect words with underline (e.g., feature/new_resource_model, etc.).
+
+1. **Main branches:** Always use `master` and `develop`
+2. **Release branches:** Use version numbers assigned by project lead (e.g., `Odyssey-v3.1.3`, `3.1.3`)
+3. **Hotfix branches:** Use `hotfix/` prefix with brief description, words separated by underscores (e.g., `hotfix/typo`, `hotfix/null_point_exception`)
+4. **Feature branches:** Use `feature/` prefix with brief description, words separated by underscores (e.g., `feature/new_resource_model`)
+
 ### Pull Request Guidelines
 
-1. Create one PR for one issue.
-2. Avoid massive PRs.
-3. Write an overview of the purpose of the PR in its title.
-4. Write a description of the PR for future reviewers.
-5. Elaborate on the feedback you need (if any).
-6. Do not capitalize the first letter.
-7. Do not put a period (.) in the end.
-
-
-
-
+1. **One PR per issue** - Keep changes focused
+2. **Avoid massive PRs** - Break large changes into smaller, reviewable pieces
+3. **Clear title** - Summarize the purpose concisely
+4. **Detailed description** - Help reviewers understand your changes
+5. **Specify feedback needs** - Indicate what kind of review you need
+6. **Title formatting:**
+   - Start with a lowercase letter
+   - Do not end with a period
 
 ### Special Situations And How To Deal With Them
-As a reviewer, you may find yourself in one of the situations below. Here’s how to deal with those:
 
-The author doesn’t follow up: ping them after a while (i.e. after a few days). If there is no further response, close the PR or complete the work yourself.
+**Author doesn't follow up:**
+- Ping them after a few days
+- If no response, close the PR or complete the work yourself
 
-Author insists on including refactoring changes alongside bug fix: We can tolerate small refactorings alongside any change. If you feel lost in the diff, ask the author to submit the refactoring as an independent PR, or at least as an independent commit in the same PR.
+**Author includes refactoring with bug fix:**
+- Small refactorings are acceptable
+- For large refactorings, request a separate PR or independent commit
+- Ask if the diff is difficult to review
 
-Author keeps rejecting your feedback: reviewers have authority to reject any change for technical reasons. If you’re unsure, ask the team for a second opinion. You may close the PR if no consensus can be reached.
+**Author rejects feedback:**
+- Reviewers have authority to reject changes for technical reasons
+- Seek a second opinion from the team if unsure
+- Close the PR if no consensus can be reached
 
-## Conduct
-While contributing, please be respectful and constructive, so that participation in our project is a positive experience for everyone.
+## Code of Conduct
 
-Examples of behavior that contributes to creating a positive environment include:
+We are committed to providing a welcoming and inclusive environment for all contributors.
 
-- Using welcoming and inclusive language
-  Being respectful of differing viewpoints and experiences
-- Gracefully accepting constructive criticism
-- Focusing on what is best for the community
-- Showing empathy towards other community members
+**Positive Behaviors:**
+- Use welcoming and inclusive language
+- Respect differing viewpoints and experiences
+- Accept constructive criticism gracefully
+- Focus on what's best for the community
+- Show empathy towards other community members
 
-Examples of unacceptable behavior include:
-
-- The use of sexualized language or imagery and unwelcome sexual attention or advances
-- Trolling, insulting/derogatory comments, and personal or political attacks
+**Unacceptable Behaviors:**
+- Sexualized language, imagery, or unwelcome advances
+- Trolling, insulting comments, or personal/political attacks
 - Public or private harassment
-- Publishing others’ private information, such as a physical or electronic address, without explicit permission
-- Other conduct which could reasonably be considered inappropriate in a professional setting
+- Publishing others' private information without permission
+- Other conduct inappropriate in a professional setting
