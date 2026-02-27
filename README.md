@@ -197,7 +197,7 @@ The [Core Devs Community](https://t.me/troncoredevscommunity) and [TRON Official
 
 # Contribution
 
-Thank you for considering to help out with the source code! If you'd like to contribute to java-tron, please see the [Contribution Guide](./CONTRIBUTING.md) for more details.
+Thank you for considering to help out with the source code! If you'd like to contribute to java-tron, please see the [Contribution Guide](./.github/CONTRIBUTING.md) for more details.
 
 # Resources
 
