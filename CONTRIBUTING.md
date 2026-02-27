@@ -209,7 +209,7 @@ A single line containing the commit type, optional scope, and subject.
 Specifies the area of change (e.g., `protobuf`, `api`, `test`, `docs`, `build`, `db`, `net`). Use `*` if no specific scope applies.
 
 **Subject Guidelines:**
-1. Limit to 50 characters
+1. Limit to 10 ~ 72 characters
 2. Use imperative, present tense (e.g., "change" not "changed" or "changes")
 3. Start with a lowercase letter
 4. Do not end with a period
