@@ -24,31 +24,28 @@ These channels provide faster responses for general inquiries.
 
 ## Question
 
-[Clearly describe what you need clarification on]
+<!-- Clearly describe what you need clarification on -->
 
 ## Context
 
-[Provide relevant context that helps us understand your question]
+<!-- Provide relevant context that helps us understand your question -->
 
 **What are you trying to achieve?**
-
-[Describe your goal or use case]
+<!-- Describe your goal or use case -->
 
 **What have you tried so far?**
-
-[List any approaches or solutions you've attempted]
+<!-- List any approaches or solutions you've attempted -->
 
 **Relevant documentation or code**
-
-[Link to relevant documentation, code sections, or examples]
+<!-- Link to relevant documentation, code sections, or examples -->
 
 ## Environment (if applicable)
 
-- Java-tron version: [e.g., 4.7.4]
-- Operating System: [e.g., Ubuntu 20.04]
-- Java version: [e.g., OpenJDK 1.8.0_161]
+- Java-tron version: <!-- e.g., 4.7.4 -->
+- Operating System: <!-- e.g., Ubuntu 20.04 -->
+- Java version: <!-- e.g., OpenJDK 1.8.0_161 -->
 
 ## Additional Information
 
-[Any other details that might be helpful]
+<!-- Any other details that might be helpful -->
 
