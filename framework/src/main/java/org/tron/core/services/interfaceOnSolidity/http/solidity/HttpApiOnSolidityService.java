@@ -11,6 +11,7 @@ import org.tron.common.application.HttpService;
 import org.tron.core.config.args.Args;
 import org.tron.core.services.filter.HttpApiAccessFilter;
 import org.tron.core.services.filter.LiteFnQueryHttpFilter;
+import org.tron.core.services.filter.SolidityCursorFilter;
 import org.tron.core.services.interfaceOnSolidity.http.EstimateEnergyOnSolidityServlet;
 import org.tron.core.services.interfaceOnSolidity.http.GetAccountByIdOnSolidityServlet;
 import org.tron.core.services.interfaceOnSolidity.http.GetAccountOnSolidityServlet;
@@ -175,6 +176,9 @@ public class HttpApiOnSolidityService extends HttpService {
   private HttpApiAccessFilter httpApiAccessFilter;
 
   @Autowired
+  private SolidityCursorFilter solidityCursorFilter;
+
+  @Autowired
   private GetBlockOnSolidityServlet getBlockOnSolidityServlet;
 
   public HttpApiOnSolidityService() {
@@ -304,5 +308,9 @@ public class HttpApiOnSolidityService extends HttpService {
     context.getServletHandler().getFilterMappings()[1]
         .setPathSpecs(new String[] {"/walletsolidity/*",
             "/wallet/getnodeinfo"});
+
+    // every request on this port reads the SOLIDITY state view
+    context.addFilter(new FilterHolder(solidityCursorFilter), "/*",
+        EnumSet.allOf(DispatcherType.class));
   }
 }

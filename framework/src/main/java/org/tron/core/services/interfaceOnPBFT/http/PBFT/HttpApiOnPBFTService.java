@@ -11,6 +11,7 @@ import org.tron.common.application.HttpService;
 import org.tron.core.config.args.Args;
 import org.tron.core.services.filter.HttpApiAccessFilter;
 import org.tron.core.services.filter.LiteFnQueryHttpFilter;
+import org.tron.core.services.filter.PbftCursorFilter;
 import org.tron.core.services.interfaceOnPBFT.http.EstimateEnergyOnPBFTServlet;
 import org.tron.core.services.interfaceOnPBFT.http.GetAccountByIdOnPBFTServlet;
 import org.tron.core.services.interfaceOnPBFT.http.GetAccountOnPBFTServlet;
@@ -128,6 +129,8 @@ public class HttpApiOnPBFTService extends HttpService {
   private LiteFnQueryHttpFilter liteFnQueryHttpFilter;
   @Autowired
   private HttpApiAccessFilter httpApiAccessFilter;
+  @Autowired
+  private PbftCursorFilter pbftCursorFilter;
 
   @Autowired
   private GetMarketOrderByAccountOnPBFTServlet getMarketOrderByAccountOnPBFTServlet;
@@ -273,6 +276,10 @@ public class HttpApiOnPBFTService extends HttpService {
 
     // api access filter
     context.addFilter(new FilterHolder(httpApiAccessFilter), "/*",
+        EnumSet.allOf(DispatcherType.class));
+
+    // every request on this port reads the PBFT state view
+    context.addFilter(new FilterHolder(pbftCursorFilter), "/*",
         EnumSet.allOf(DispatcherType.class));
   }
 }
