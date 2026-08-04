@@ -46,8 +46,10 @@ import org.tron.core.services.http.GetNowBlockServlet;
 import org.tron.core.services.http.GetPaginatedAssetIssueListServlet;
 import org.tron.core.services.http.GetPaginatedNowWitnessListServlet;
 import org.tron.core.services.http.GetRewardServlet;
+import org.tron.core.services.http.GetTransactionByIdServlet;
 import org.tron.core.services.http.GetTransactionCountByBlockNumServlet;
 import org.tron.core.services.http.GetTransactionInfoByBlockNumServlet;
+import org.tron.core.services.http.GetTransactionInfoByIdServlet;
 import org.tron.core.services.http.IsShieldedTRC20ContractNoteSpentServlet;
 import org.tron.core.services.http.IsSpendServlet;
 import org.tron.core.services.http.ListExchangesServlet;
@@ -67,9 +69,9 @@ public class SolidityNodeHttpApiService extends HttpService {
   @Autowired
   private GetAccountServlet getAccountServlet;
   @Autowired
-  private GetTransactionByIdSolidityServlet getTransactionByIdServlet;
+  private GetTransactionByIdServlet getTransactionByIdServlet;
   @Autowired
-  private GetTransactionInfoByIdSolidityServlet getTransactionInfoByIdServlet;
+  private GetTransactionInfoByIdServlet getTransactionInfoByIdServlet;
   @Autowired
   private GetTransactionCountByBlockNumServlet getTransactionCountByBlockNumServlet;
   @Autowired
