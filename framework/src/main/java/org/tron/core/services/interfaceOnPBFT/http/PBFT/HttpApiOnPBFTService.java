@@ -12,119 +12,120 @@ import org.tron.core.config.args.Args;
 import org.tron.core.services.filter.HttpApiAccessFilter;
 import org.tron.core.services.filter.LiteFnQueryHttpFilter;
 import org.tron.core.services.filter.PbftCursorFilter;
-import org.tron.core.services.interfaceOnPBFT.http.EstimateEnergyOnPBFTServlet;
-import org.tron.core.services.interfaceOnPBFT.http.GetAccountByIdOnPBFTServlet;
-import org.tron.core.services.interfaceOnPBFT.http.GetAccountOnPBFTServlet;
-import org.tron.core.services.interfaceOnPBFT.http.GetAssetIssueByIdOnPBFTServlet;
-import org.tron.core.services.interfaceOnPBFT.http.GetAssetIssueByNameOnPBFTServlet;
-import org.tron.core.services.interfaceOnPBFT.http.GetAssetIssueListByNameOnPBFTServlet;
-import org.tron.core.services.interfaceOnPBFT.http.GetAssetIssueListOnPBFTServlet;
-import org.tron.core.services.interfaceOnPBFT.http.GetAvailableUnfreezeCountOnPBFTServlet;
-import org.tron.core.services.interfaceOnPBFT.http.GetBandwidthPricesOnPBFTServlet;
-import org.tron.core.services.interfaceOnPBFT.http.GetBlockByIdOnPBFTServlet;
-import org.tron.core.services.interfaceOnPBFT.http.GetBlockByLatestNumOnPBFTServlet;
-import org.tron.core.services.interfaceOnPBFT.http.GetBlockByLimitNextOnPBFTServlet;
-import org.tron.core.services.interfaceOnPBFT.http.GetBlockByNumOnPBFTServlet;
-import org.tron.core.services.interfaceOnPBFT.http.GetBrokerageOnPBFTServlet;
-import org.tron.core.services.interfaceOnPBFT.http.GetBurnTrxOnPBFTServlet;
-import org.tron.core.services.interfaceOnPBFT.http.GetCanDelegatedMaxSizeOnPBFTServlet;
-import org.tron.core.services.interfaceOnPBFT.http.GetCanWithdrawUnfreezeAmountOnPBFTServlet;
-import org.tron.core.services.interfaceOnPBFT.http.GetDelegatedResourceAccountIndexOnPBFTServlet;
-import org.tron.core.services.interfaceOnPBFT.http.GetDelegatedResourceAccountIndexV2OnPBFTServlet;
-import org.tron.core.services.interfaceOnPBFT.http.GetDelegatedResourceOnPBFTServlet;
-import org.tron.core.services.interfaceOnPBFT.http.GetDelegatedResourceV2OnPBFTServlet;
-import org.tron.core.services.interfaceOnPBFT.http.GetEnergyPricesOnPBFTServlet;
-import org.tron.core.services.interfaceOnPBFT.http.GetExchangeByIdOnPBFTServlet;
-import org.tron.core.services.interfaceOnPBFT.http.GetMarketOrderByAccountOnPBFTServlet;
-import org.tron.core.services.interfaceOnPBFT.http.GetMarketOrderByIdOnPBFTServlet;
-import org.tron.core.services.interfaceOnPBFT.http.GetMarketOrderListByPairOnPBFTServlet;
-import org.tron.core.services.interfaceOnPBFT.http.GetMarketPairListOnPBFTServlet;
-import org.tron.core.services.interfaceOnPBFT.http.GetMarketPriceByPairOnPBFTServlet;
-import org.tron.core.services.interfaceOnPBFT.http.GetMerkleTreeVoucherInfoOnPBFTServlet;
-import org.tron.core.services.interfaceOnPBFT.http.GetNodeInfoOnPBFTServlet;
-import org.tron.core.services.interfaceOnPBFT.http.GetNowBlockOnPBFTServlet;
-import org.tron.core.services.interfaceOnPBFT.http.GetPaginatedAssetIssueListOnPBFTServlet;
-import org.tron.core.services.interfaceOnPBFT.http.GetRewardOnPBFTServlet;
-import org.tron.core.services.interfaceOnPBFT.http.GetTransactionCountByBlockNumOnPBFTServlet;
-import org.tron.core.services.interfaceOnPBFT.http.IsShieldedTRC20ContractNoteSpentOnPBFTServlet;
-import org.tron.core.services.interfaceOnPBFT.http.IsSpendOnPBFTServlet;
-import org.tron.core.services.interfaceOnPBFT.http.ListExchangesOnPBFTServlet;
-import org.tron.core.services.interfaceOnPBFT.http.ListWitnessesOnPBFTServlet;
-import org.tron.core.services.interfaceOnPBFT.http.ScanAndMarkNoteByIvkOnPBFTServlet;
-import org.tron.core.services.interfaceOnPBFT.http.ScanNoteByIvkOnPBFTServlet;
-import org.tron.core.services.interfaceOnPBFT.http.ScanNoteByOvkOnPBFTServlet;
-import org.tron.core.services.interfaceOnPBFT.http.ScanShieldedTRC20NotesByIvkOnPBFTServlet;
-import org.tron.core.services.interfaceOnPBFT.http.ScanShieldedTRC20NotesByOvkOnPBFTServlet;
-import org.tron.core.services.interfaceOnPBFT.http.TriggerConstantContractOnPBFTServlet;
+import org.tron.core.services.http.EstimateEnergyServlet;
+import org.tron.core.services.http.GetAccountByIdServlet;
+import org.tron.core.services.http.GetAccountServlet;
+import org.tron.core.services.http.GetAssetIssueByIdServlet;
+import org.tron.core.services.http.GetAssetIssueByNameServlet;
+import org.tron.core.services.http.GetAssetIssueListByNameServlet;
+import org.tron.core.services.http.GetAssetIssueListServlet;
+import org.tron.core.services.http.GetAvailableUnfreezeCountServlet;
+import org.tron.core.services.http.GetBandwidthPricesServlet;
+import org.tron.core.services.http.GetBlockByIdServlet;
+import org.tron.core.services.http.GetBlockByLatestNumServlet;
+import org.tron.core.services.http.GetBlockByLimitNextServlet;
+import org.tron.core.services.http.GetBlockByNumServlet;
+import org.tron.core.services.http.GetBlockServlet;
+import org.tron.core.services.http.GetBrokerageServlet;
+import org.tron.core.services.http.GetBurnTrxServlet;
+import org.tron.core.services.http.GetCanDelegatedMaxSizeServlet;
+import org.tron.core.services.http.GetCanWithdrawUnfreezeAmountServlet;
+import org.tron.core.services.http.GetDelegatedResourceAccountIndexServlet;
+import org.tron.core.services.http.GetDelegatedResourceAccountIndexV2Servlet;
+import org.tron.core.services.http.GetDelegatedResourceServlet;
+import org.tron.core.services.http.GetDelegatedResourceV2Servlet;
+import org.tron.core.services.http.GetEnergyPricesServlet;
+import org.tron.core.services.http.GetExchangeByIdServlet;
+import org.tron.core.services.http.GetMarketOrderByAccountServlet;
+import org.tron.core.services.http.GetMarketOrderByIdServlet;
+import org.tron.core.services.http.GetMarketOrderListByPairServlet;
+import org.tron.core.services.http.GetMarketPairListServlet;
+import org.tron.core.services.http.GetMarketPriceByPairServlet;
+import org.tron.core.services.http.GetMerkleTreeVoucherInfoServlet;
+import org.tron.core.services.http.GetNodeInfoServlet;
+import org.tron.core.services.http.GetNowBlockServlet;
+import org.tron.core.services.http.GetPaginatedAssetIssueListServlet;
+import org.tron.core.services.http.GetRewardServlet;
+import org.tron.core.services.http.GetTransactionByIdServlet;
+import org.tron.core.services.http.GetTransactionCountByBlockNumServlet;
+import org.tron.core.services.http.GetTransactionInfoByIdServlet;
+import org.tron.core.services.http.IsShieldedTRC20ContractNoteSpentServlet;
+import org.tron.core.services.http.IsSpendServlet;
+import org.tron.core.services.http.ListExchangesServlet;
+import org.tron.core.services.http.ListWitnessesServlet;
+import org.tron.core.services.http.ScanAndMarkNoteByIvkServlet;
+import org.tron.core.services.http.ScanNoteByIvkServlet;
+import org.tron.core.services.http.ScanNoteByOvkServlet;
+import org.tron.core.services.http.ScanShieldedTRC20NotesByIvkServlet;
+import org.tron.core.services.http.ScanShieldedTRC20NotesByOvkServlet;
+import org.tron.core.services.http.TriggerConstantContractServlet;
 
 @Slf4j(topic = "API")
 public class HttpApiOnPBFTService extends HttpService {
 
   @Autowired
-  private GetAccountOnPBFTServlet accountOnPBFTServlet;
+  private GetAccountServlet accountServlet;
 
   @Autowired
-  private GetTransactionByIdOnPBFTServlet getTransactionByIdOnPBFTServlet;
+  private GetTransactionByIdServlet getTransactionByIdServlet;
   @Autowired
-  private GetTransactionInfoByIdOnPBFTServlet getTransactionInfoByIdOnPBFTServlet;
+  private GetTransactionInfoByIdServlet getTransactionInfoByIdServlet;
   @Autowired
-  private ListWitnessesOnPBFTServlet listWitnessesOnPBFTServlet;
+  private ListWitnessesServlet listWitnessesServlet;
   @Autowired
-  private GetAssetIssueListOnPBFTServlet getAssetIssueListOnPBFTServlet;
+  private GetAssetIssueListServlet getAssetIssueListServlet;
   @Autowired
-  private GetPaginatedAssetIssueListOnPBFTServlet getPaginatedAssetIssueListOnPBFTServlet;
+  private GetPaginatedAssetIssueListServlet getPaginatedAssetIssueListServlet;
   @Autowired
-  private GetNowBlockOnPBFTServlet getNowBlockOnPBFTServlet;
+  private GetNowBlockServlet getNowBlockServlet;
   @Autowired
-  private GetBlockByNumOnPBFTServlet getBlockByNumOnPBFTServlet;
+  private GetBlockByNumServlet getBlockByNumServlet;
 
   @Autowired
-  private GetNodeInfoOnPBFTServlet getNodeInfoOnPBFTServlet;
+  private GetNodeInfoServlet getNodeInfoServlet;
 
   @Autowired
-  private GetDelegatedResourceOnPBFTServlet getDelegatedResourceOnPBFTServlet;
+  private GetDelegatedResourceServlet getDelegatedResourceServlet;
   @Autowired
-  private GetDelegatedResourceAccountIndexOnPBFTServlet
-      getDelegatedResourceAccountIndexOnPBFTServlet;
+  private GetDelegatedResourceAccountIndexServlet getDelegatedResourceAccountIndexServlet;
   @Autowired
-  private GetExchangeByIdOnPBFTServlet getExchangeByIdOnPBFTServlet;
+  private GetExchangeByIdServlet getExchangeByIdServlet;
   @Autowired
-  private ListExchangesOnPBFTServlet listExchangesOnPBFTServlet;
+  private ListExchangesServlet listExchangesServlet;
   @Autowired
-  private GetTransactionCountByBlockNumOnPBFTServlet
-      getTransactionCountByBlockNumOnPBFTServlet;
+  private GetTransactionCountByBlockNumServlet getTransactionCountByBlockNumServlet;
   @Autowired
-  private GetAssetIssueByNameOnPBFTServlet getAssetIssueByNameOnPBFTServlet;
+  private GetAssetIssueByNameServlet getAssetIssueByNameServlet;
   @Autowired
-  private GetAssetIssueByIdOnPBFTServlet getAssetIssueByIdOnPBFTServlet;
+  private GetAssetIssueByIdServlet getAssetIssueByIdServlet;
   @Autowired
-  private GetAssetIssueListByNameOnPBFTServlet getAssetIssueListByNameOnPBFTServlet;
+  private GetAssetIssueListByNameServlet getAssetIssueListByNameServlet;
   @Autowired
-  private GetAccountByIdOnPBFTServlet getAccountByIdOnPBFTServlet;
+  private GetAccountByIdServlet getAccountByIdServlet;
   @Autowired
-  private GetBlockByIdOnPBFTServlet getBlockByIdOnPBFTServlet;
+  private GetBlockByIdServlet getBlockByIdServlet;
   @Autowired
-  private GetBlockByLimitNextOnPBFTServlet getBlockByLimitNextOnPBFTServlet;
+  private GetBlockByLimitNextServlet getBlockByLimitNextServlet;
   @Autowired
-  private GetBlockByLatestNumOnPBFTServlet getBlockByLatestNumOnPBFTServlet;
+  private GetBlockByLatestNumServlet getBlockByLatestNumServlet;
   @Autowired
-  private GetMerkleTreeVoucherInfoOnPBFTServlet getMerkleTreeVoucherInfoOnPBFTServlet;
+  private GetMerkleTreeVoucherInfoServlet getMerkleTreeVoucherInfoServlet;
   @Autowired
-  private ScanNoteByIvkOnPBFTServlet scanNoteByIvkOnPBFTServlet;
+  private ScanNoteByIvkServlet scanNoteByIvkServlet;
   @Autowired
-  private ScanAndMarkNoteByIvkOnPBFTServlet scanAndMarkNoteByIvkOnPBFTServlet;
+  private ScanAndMarkNoteByIvkServlet scanAndMarkNoteByIvkServlet;
   @Autowired
-  private ScanNoteByOvkOnPBFTServlet scanNoteByOvkOnPBFTServlet;
+  private ScanNoteByOvkServlet scanNoteByOvkServlet;
   @Autowired
-  private IsSpendOnPBFTServlet isSpendOnPBFTServlet;
+  private IsSpendServlet isSpendServlet;
   @Autowired
-  private GetBrokerageOnPBFTServlet getBrokerageServlet;
+  private GetBrokerageServlet getBrokerageServlet;
   @Autowired
-  private GetRewardOnPBFTServlet getRewardServlet;
+  private GetRewardServlet getRewardServlet;
   @Autowired
-  private TriggerConstantContractOnPBFTServlet triggerConstantContractOnPBFTServlet;
+  private TriggerConstantContractServlet triggerConstantContractServlet;
   @Autowired
-  private EstimateEnergyOnPBFTServlet estimateEnergyOnPBFTServlet;
+  private EstimateEnergyServlet estimateEnergyServlet;
   @Autowired
   private LiteFnQueryHttpFilter liteFnQueryHttpFilter;
   @Autowired
@@ -133,44 +134,43 @@ public class HttpApiOnPBFTService extends HttpService {
   private PbftCursorFilter pbftCursorFilter;
 
   @Autowired
-  private GetMarketOrderByAccountOnPBFTServlet getMarketOrderByAccountOnPBFTServlet;
+  private GetMarketOrderByAccountServlet getMarketOrderByAccountServlet;
   @Autowired
-  private GetMarketOrderByIdOnPBFTServlet getMarketOrderByIdOnPBFTServlet;
+  private GetMarketOrderByIdServlet getMarketOrderByIdServlet;
   @Autowired
-  private GetMarketPriceByPairOnPBFTServlet getMarketPriceByPairOnPBFTServlet;
+  private GetMarketPriceByPairServlet getMarketPriceByPairServlet;
   @Autowired
-  private GetMarketOrderListByPairOnPBFTServlet getMarketOrderListByPairOnPBFTServlet;
+  private GetMarketOrderListByPairServlet getMarketOrderListByPairServlet;
   @Autowired
-  private GetMarketPairListOnPBFTServlet getMarketPairListOnPBFTServlet;
+  private GetMarketPairListServlet getMarketPairListServlet;
 
   @Autowired
-  private ScanShieldedTRC20NotesByIvkOnPBFTServlet scanShieldedTRC20NotesByIvkOnPBFTServlet;
+  private ScanShieldedTRC20NotesByIvkServlet scanShieldedTRC20NotesByIvkServlet;
   @Autowired
-  private ScanShieldedTRC20NotesByOvkOnPBFTServlet scanShieldedTRC20NotesByOvkOnPBFTServlet;
+  private ScanShieldedTRC20NotesByOvkServlet scanShieldedTRC20NotesByOvkServlet;
   @Autowired
-  private IsShieldedTRC20ContractNoteSpentOnPBFTServlet
-      isShieldedTRC20ContractNoteSpentOnPBFTServlet;
+  private IsShieldedTRC20ContractNoteSpentServlet
+      isShieldedTRC20ContractNoteSpentServlet;
   @Autowired
-  private GetBurnTrxOnPBFTServlet getBurnTrxOnPBFTServlet;
+  private GetBurnTrxServlet getBurnTrxServlet;
   @Autowired
-  private GetBandwidthPricesOnPBFTServlet getBandwidthPricesOnPBFTServlet;
+  private GetBandwidthPricesServlet getBandwidthPricesServlet;
   @Autowired
-  private GetEnergyPricesOnPBFTServlet getEnergyPricesOnPBFTServlet;
+  private GetEnergyPricesServlet getEnergyPricesServlet;
 
   @Autowired
-  private GetBlockOnPBFTServlet getBlockOnPBFTServlet;
+  private GetBlockServlet getBlockServlet;
 
   @Autowired
-  private GetAvailableUnfreezeCountOnPBFTServlet getAvailableUnfreezeCountOnPBFTServlet;
+  private GetAvailableUnfreezeCountServlet getAvailableUnfreezeCountServlet;
   @Autowired
-  private GetCanDelegatedMaxSizeOnPBFTServlet getCanDelegatedMaxSizeOnPBFTServlet;
+  private GetCanDelegatedMaxSizeServlet getCanDelegatedMaxSizeServlet;
   @Autowired
-  private GetCanWithdrawUnfreezeAmountOnPBFTServlet getCanWithdrawUnfreezeAmountOnPBFTServlet;
+  private GetCanWithdrawUnfreezeAmountServlet getCanWithdrawUnfreezeAmountServlet;
   @Autowired
-  private GetDelegatedResourceAccountIndexV2OnPBFTServlet
-      getDelegatedResourceAccountIndexV2OnPBFTServlet;
+  private GetDelegatedResourceAccountIndexV2Servlet getDelegatedResourceAccountIndexV2Servlet;
   @Autowired
-  private GetDelegatedResourceV2OnPBFTServlet getDelegatedResourceV2OnPBFTServlet;
+  private GetDelegatedResourceV2Servlet getDelegatedResourceV2Servlet;
 
   public HttpApiOnPBFTService() {
     port = Args.getInstance().getPBFTHttpPort();
@@ -182,88 +182,88 @@ public class HttpApiOnPBFTService extends HttpService {
   @Override
   protected void addServlet(ServletContextHandler context) {
     // same as FullNode
-    context.addServlet(new ServletHolder(accountOnPBFTServlet), "/getaccount");
-    context.addServlet(new ServletHolder(listWitnessesOnPBFTServlet), "/listwitnesses");
-    context.addServlet(new ServletHolder(getAssetIssueListOnPBFTServlet), "/getassetissuelist");
-    context.addServlet(new ServletHolder(getPaginatedAssetIssueListOnPBFTServlet),
+    context.addServlet(new ServletHolder(accountServlet), "/getaccount");
+    context.addServlet(new ServletHolder(listWitnessesServlet), "/listwitnesses");
+    context.addServlet(new ServletHolder(getAssetIssueListServlet), "/getassetissuelist");
+    context.addServlet(new ServletHolder(getPaginatedAssetIssueListServlet),
         "/getpaginatedassetissuelist");
     context
-        .addServlet(new ServletHolder(getAssetIssueByNameOnPBFTServlet), "/getassetissuebyname");
-    context.addServlet(new ServletHolder(getAssetIssueByIdOnPBFTServlet), "/getassetissuebyid");
-    context.addServlet(new ServletHolder(getAssetIssueListByNameOnPBFTServlet),
+        .addServlet(new ServletHolder(getAssetIssueByNameServlet), "/getassetissuebyname");
+    context.addServlet(new ServletHolder(getAssetIssueByIdServlet), "/getassetissuebyid");
+    context.addServlet(new ServletHolder(getAssetIssueListByNameServlet),
         "/getassetissuelistbyname");
-    context.addServlet(new ServletHolder(getNowBlockOnPBFTServlet), "/getnowblock");
-    context.addServlet(new ServletHolder(getBlockByNumOnPBFTServlet), "/getblockbynum");
-    context.addServlet(new ServletHolder(getDelegatedResourceOnPBFTServlet),
+    context.addServlet(new ServletHolder(getNowBlockServlet), "/getnowblock");
+    context.addServlet(new ServletHolder(getBlockByNumServlet), "/getblockbynum");
+    context.addServlet(new ServletHolder(getDelegatedResourceServlet),
         "/getdelegatedresource");
-    context.addServlet(new ServletHolder(getDelegatedResourceAccountIndexOnPBFTServlet),
+    context.addServlet(new ServletHolder(getDelegatedResourceAccountIndexServlet),
         "/getdelegatedresourceaccountindex");
-    context.addServlet(new ServletHolder(getExchangeByIdOnPBFTServlet), "/getexchangebyid");
-    context.addServlet(new ServletHolder(listExchangesOnPBFTServlet), "/listexchanges");
-    context.addServlet(new ServletHolder(getAccountByIdOnPBFTServlet), "/getaccountbyid");
-    context.addServlet(new ServletHolder(getBlockByIdOnPBFTServlet), "/getblockbyid");
+    context.addServlet(new ServletHolder(getExchangeByIdServlet), "/getexchangebyid");
+    context.addServlet(new ServletHolder(listExchangesServlet), "/listexchanges");
+    context.addServlet(new ServletHolder(getAccountByIdServlet), "/getaccountbyid");
+    context.addServlet(new ServletHolder(getBlockByIdServlet), "/getblockbyid");
     context
-        .addServlet(new ServletHolder(getBlockByLimitNextOnPBFTServlet), "/getblockbylimitnext");
+        .addServlet(new ServletHolder(getBlockByLimitNextServlet), "/getblockbylimitnext");
     context
-        .addServlet(new ServletHolder(getBlockByLatestNumOnPBFTServlet), "/getblockbylatestnum");
-    context.addServlet(new ServletHolder(getMerkleTreeVoucherInfoOnPBFTServlet),
+        .addServlet(new ServletHolder(getBlockByLatestNumServlet), "/getblockbylatestnum");
+    context.addServlet(new ServletHolder(getMerkleTreeVoucherInfoServlet),
         "/getmerkletreevoucherinfo");
-    context.addServlet(new ServletHolder(scanAndMarkNoteByIvkOnPBFTServlet),
+    context.addServlet(new ServletHolder(scanAndMarkNoteByIvkServlet),
         "/scanandmarknotebyivk");
-    context.addServlet(new ServletHolder(scanNoteByIvkOnPBFTServlet), "/scannotebyivk");
-    context.addServlet(new ServletHolder(scanNoteByOvkOnPBFTServlet), "/scannotebyovk");
-    context.addServlet(new ServletHolder(isSpendOnPBFTServlet), "/isspend");
-    context.addServlet(new ServletHolder(triggerConstantContractOnPBFTServlet),
+    context.addServlet(new ServletHolder(scanNoteByIvkServlet), "/scannotebyivk");
+    context.addServlet(new ServletHolder(scanNoteByOvkServlet), "/scannotebyovk");
+    context.addServlet(new ServletHolder(isSpendServlet), "/isspend");
+    context.addServlet(new ServletHolder(triggerConstantContractServlet),
         "/triggerconstantcontract");
-    context.addServlet(new ServletHolder(estimateEnergyOnPBFTServlet), "/estimateenergy");
+    context.addServlet(new ServletHolder(estimateEnergyServlet), "/estimateenergy");
 
     // only for PBFTNode
-    context.addServlet(new ServletHolder(getTransactionByIdOnPBFTServlet), "/gettransactionbyid");
-    context.addServlet(new ServletHolder(getTransactionInfoByIdOnPBFTServlet),
+    context.addServlet(new ServletHolder(getTransactionByIdServlet), "/gettransactionbyid");
+    context.addServlet(new ServletHolder(getTransactionInfoByIdServlet),
         "/gettransactioninfobyid");
 
-    context.addServlet(new ServletHolder(getTransactionCountByBlockNumOnPBFTServlet),
+    context.addServlet(new ServletHolder(getTransactionCountByBlockNumServlet),
         "/gettransactioncountbyblocknum");
 
-    context.addServlet(new ServletHolder(getNodeInfoOnPBFTServlet), "/getnodeinfo");
+    context.addServlet(new ServletHolder(getNodeInfoServlet), "/getnodeinfo");
     context.addServlet(new ServletHolder(getBrokerageServlet), "/getBrokerage");
     context.addServlet(new ServletHolder(getRewardServlet), "/getReward");
 
-    context.addServlet(new ServletHolder(getMarketOrderByAccountOnPBFTServlet),
+    context.addServlet(new ServletHolder(getMarketOrderByAccountServlet),
         "/getmarketorderbyaccount");
-    context.addServlet(new ServletHolder(getMarketOrderByIdOnPBFTServlet),
+    context.addServlet(new ServletHolder(getMarketOrderByIdServlet),
         "/getmarketorderbyid");
-    context.addServlet(new ServletHolder(getMarketPriceByPairOnPBFTServlet),
+    context.addServlet(new ServletHolder(getMarketPriceByPairServlet),
         "/getmarketpricebypair");
-    context.addServlet(new ServletHolder(getMarketOrderListByPairOnPBFTServlet),
+    context.addServlet(new ServletHolder(getMarketOrderListByPairServlet),
         "/getmarketorderlistbypair");
-    context.addServlet(new ServletHolder(getMarketPairListOnPBFTServlet),
+    context.addServlet(new ServletHolder(getMarketPairListServlet),
         "/getmarketpairlist");
 
-    context.addServlet(new ServletHolder(scanShieldedTRC20NotesByIvkOnPBFTServlet),
+    context.addServlet(new ServletHolder(scanShieldedTRC20NotesByIvkServlet),
         "/scanshieldedtrc20notesbyivk");
-    context.addServlet(new ServletHolder(scanShieldedTRC20NotesByOvkOnPBFTServlet),
+    context.addServlet(new ServletHolder(scanShieldedTRC20NotesByOvkServlet),
         "/scanshieldedtrc20notesbyovk");
-    context.addServlet(new ServletHolder(isShieldedTRC20ContractNoteSpentOnPBFTServlet),
+    context.addServlet(new ServletHolder(isShieldedTRC20ContractNoteSpentServlet),
         "/isshieldedtrc20contractnotespent");
-    context.addServlet(new ServletHolder(getBurnTrxOnPBFTServlet),
+    context.addServlet(new ServletHolder(getBurnTrxServlet),
         "/getburntrx");
-    context.addServlet(new ServletHolder(getBandwidthPricesOnPBFTServlet),
+    context.addServlet(new ServletHolder(getBandwidthPricesServlet),
         "/getbandwidthprices");
-    context.addServlet(new ServletHolder(getEnergyPricesOnPBFTServlet),
+    context.addServlet(new ServletHolder(getEnergyPricesServlet),
         "/getenergyprices");
-    context.addServlet(new ServletHolder(getBlockOnPBFTServlet),
+    context.addServlet(new ServletHolder(getBlockServlet),
         "/getblock");
 
-    context.addServlet(new ServletHolder(getAvailableUnfreezeCountOnPBFTServlet),
+    context.addServlet(new ServletHolder(getAvailableUnfreezeCountServlet),
         "/getavailableunfreezecount");
-    context.addServlet(new ServletHolder(getCanDelegatedMaxSizeOnPBFTServlet),
+    context.addServlet(new ServletHolder(getCanDelegatedMaxSizeServlet),
         "/getcandelegatedmaxsize");
-    context.addServlet(new ServletHolder(getCanWithdrawUnfreezeAmountOnPBFTServlet),
+    context.addServlet(new ServletHolder(getCanWithdrawUnfreezeAmountServlet),
         "/getcanwithdrawunfreezeamount");
-    context.addServlet(new ServletHolder(getDelegatedResourceAccountIndexV2OnPBFTServlet),
+    context.addServlet(new ServletHolder(getDelegatedResourceAccountIndexV2Servlet),
         "/getdelegatedresourceaccountindexv2");
-    context.addServlet(new ServletHolder(getDelegatedResourceV2OnPBFTServlet),
+    context.addServlet(new ServletHolder(getDelegatedResourceV2Servlet),
         "/getdelegatedresourcev2");
   }
 
