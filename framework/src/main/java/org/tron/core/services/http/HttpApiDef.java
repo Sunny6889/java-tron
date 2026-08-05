@@ -3,7 +3,9 @@ package org.tron.core.services.http;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javax.servlet.http.HttpServlet;
 import org.tron.core.services.http.servlets.AccountPermissionUpdateServlet;
 import org.tron.core.services.http.servlets.BroadcastHexServlet;
@@ -551,12 +553,38 @@ public enum HttpApiDef {
   private final Access access;
   private final EnumSet<Surface> surfaces;
 
+  static {
+    // a table that breaks its invariants must not boot the node
+    validate();
+  }
+
   HttpApiDef(String suffix, Class<? extends HttpServlet> servlet, Access access,
       Surface first, Surface... rest) {
     this.suffix = suffix;
     this.servlet = servlet;
     this.access = access;
     this.surfaces = EnumSet.of(first, rest);
+  }
+
+  /**
+   * Structural invariants of the table, checked when the class loads (i.e. before any http
+   * service can mount an endpoint): suffixes are unique, and every BUILD / WRITE row is
+   * exposed on the FULL surface only — the cursor surfaces (SOLIDITY / PBFT) must never run
+   * a write path on a cursor-switched thread, and the standalone SolidityNode surface cannot
+   * propagate transactions.
+   */
+  static void validate() {
+    Set<String> seen = new HashSet<>();
+    for (HttpApiDef def : values()) {
+      if (!seen.add(def.suffix)) {
+        throw new IllegalStateException("duplicate endpoint suffix in HttpApiDef: " + def.suffix);
+      }
+      if (def.access != Access.READ && !EnumSet.of(Surface.FULL).equals(def.surfaces)) {
+        throw new IllegalStateException(String.format(
+            "%s is %s and may only be exposed on the FULL surface, found %s",
+            def.name(), def.access, def.surfaces));
+      }
+    }
   }
 
   public static List<HttpApiDef> forSurface(Surface surface) {
