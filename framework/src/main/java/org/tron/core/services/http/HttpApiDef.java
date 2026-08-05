@@ -34,7 +34,6 @@ import org.tron.core.services.http.servlets.GetMarketOrderByIdServlet;
 import org.tron.core.services.http.servlets.GetMarketOrderListByPairServlet;
 import org.tron.core.services.http.servlets.GetMarketPairListServlet;
 import org.tron.core.services.http.servlets.GetMarketPriceByPairServlet;
-import org.tron.core.services.http.servlets.GetMerkleTreeVoucherInfoServlet;
 import org.tron.core.services.http.servlets.GetNodeInfoServlet;
 import org.tron.core.services.http.servlets.GetNowBlockServlet;
 import org.tron.core.services.http.servlets.GetPaginatedAssetIssueListServlet;
@@ -45,12 +44,8 @@ import org.tron.core.services.http.servlets.GetTransactionCountByBlockNumServlet
 import org.tron.core.services.http.servlets.GetTransactionInfoByBlockNumServlet;
 import org.tron.core.services.http.servlets.GetTransactionInfoByIdServlet;
 import org.tron.core.services.http.servlets.IsShieldedTRC20ContractNoteSpentServlet;
-import org.tron.core.services.http.servlets.IsSpendServlet;
 import org.tron.core.services.http.servlets.ListExchangesServlet;
 import org.tron.core.services.http.servlets.ListWitnessesServlet;
-import org.tron.core.services.http.servlets.ScanAndMarkNoteByIvkServlet;
-import org.tron.core.services.http.servlets.ScanNoteByIvkServlet;
-import org.tron.core.services.http.servlets.ScanNoteByOvkServlet;
 import org.tron.core.services.http.servlets.ScanShieldedTRC20NotesByIvkServlet;
 import org.tron.core.services.http.servlets.ScanShieldedTRC20NotesByOvkServlet;
 import org.tron.core.services.http.servlets.TriggerConstantContractServlet;
@@ -181,7 +176,6 @@ public enum HttpApiDef {
   GET_MARKET_PAIR_LIST("getmarketpairlist", GetMarketPairListServlet.class,
       Access.READ, Surface.FULL, Surface.SOLIDITY, Surface.PBFT, Surface.SOLIDITY_NODE),
 
-
   GET_TRANSACTION_BY_ID("gettransactionbyid", GetTransactionByIdServlet.class,
       Access.READ, Surface.FULL, Surface.SOLIDITY, Surface.PBFT, Surface.SOLIDITY_NODE),
 
@@ -218,22 +212,7 @@ public enum HttpApiDef {
       Access.READ, Surface.FULL, Surface.SOLIDITY, Surface.PBFT, Surface.SOLIDITY_NODE),
 
   GET_ENERGY_PRICES("getenergyprices", GetEnergyPricesServlet.class,
-      Access.READ, Surface.FULL, Surface.SOLIDITY, Surface.PBFT, Surface.SOLIDITY_NODE),
-
-  GET_MERKLE_TREE_VOUCHER_INFO("getmerkletreevoucherinfo", GetMerkleTreeVoucherInfoServlet.class,
-      Access.READ, Surface.PBFT),
-
-  SCAN_AND_MARK_NOTE_BY_IVK("scanandmarknotebyivk", ScanAndMarkNoteByIvkServlet.class,
-      Access.READ, Surface.PBFT),
-
-  SCAN_NOTE_BY_IVK("scannotebyivk", ScanNoteByIvkServlet.class,
-      Access.READ, Surface.FULL, Surface.PBFT),
-
-  SCAN_NOTE_BY_OVK("scannotebyovk", ScanNoteByOvkServlet.class,
-      Access.READ, Surface.FULL, Surface.PBFT),
-
-  IS_SPEND("isspend", IsSpendServlet.class,
-      Access.READ, Surface.FULL, Surface.PBFT);
+      Access.READ, Surface.FULL, Surface.SOLIDITY, Surface.PBFT, Surface.SOLIDITY_NODE);
 
   /** Http services an endpoint can be exposed on. */
   public enum Surface {
