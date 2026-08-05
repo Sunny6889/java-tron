@@ -38,9 +38,11 @@ import org.tron.core.services.http.servlets.GetMerkleTreeVoucherInfoServlet;
 import org.tron.core.services.http.servlets.GetNodeInfoServlet;
 import org.tron.core.services.http.servlets.GetNowBlockServlet;
 import org.tron.core.services.http.servlets.GetPaginatedAssetIssueListServlet;
+import org.tron.core.services.http.servlets.GetPaginatedNowWitnessListServlet;
 import org.tron.core.services.http.servlets.GetRewardServlet;
 import org.tron.core.services.http.servlets.GetTransactionByIdServlet;
 import org.tron.core.services.http.servlets.GetTransactionCountByBlockNumServlet;
+import org.tron.core.services.http.servlets.GetTransactionInfoByBlockNumServlet;
 import org.tron.core.services.http.servlets.GetTransactionInfoByIdServlet;
 import org.tron.core.services.http.servlets.IsShieldedTRC20ContractNoteSpentServlet;
 import org.tron.core.services.http.servlets.IsSpendServlet;
@@ -70,6 +72,11 @@ public enum HttpApiDef {
 
   LIST_WITNESSES("listwitnesses", ListWitnessesServlet.class,
       Access.READ, Surface.FULL, Surface.SOLIDITY, Surface.PBFT, Surface.SOLIDITY_NODE),
+
+  GET_PAGINATED_NOW_WITNESS_LIST(
+      "getpaginatednowwitnesslist",
+      GetPaginatedNowWitnessListServlet.class,
+      Access.READ, Surface.FULL, Surface.SOLIDITY, Surface.SOLIDITY_NODE),
 
   GET_ASSET_ISSUE_LIST("getassetissuelist", GetAssetIssueListServlet.class,
       Access.READ, Surface.FULL, Surface.SOLIDITY, Surface.PBFT, Surface.SOLIDITY_NODE),
@@ -140,6 +147,11 @@ public enum HttpApiDef {
 
   ESTIMATE_ENERGY("estimateenergy", EstimateEnergyServlet.class,
       Access.READ, Surface.FULL, Surface.SOLIDITY, Surface.PBFT, Surface.SOLIDITY_NODE),
+
+  GET_TRANSACTION_INFO_BY_BLOCK_NUM(
+      "gettransactioninfobyblocknum",
+      GetTransactionInfoByBlockNumServlet.class,
+      Access.READ, Surface.FULL, Surface.SOLIDITY, Surface.SOLIDITY_NODE),
 
   GET_TRANSACTION_BY_ID("gettransactionbyid", GetTransactionByIdServlet.class,
       Access.READ, Surface.FULL, Surface.SOLIDITY, Surface.PBFT, Surface.SOLIDITY_NODE),
