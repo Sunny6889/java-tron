@@ -104,9 +104,28 @@ public enum HttpApiDef {
   GET_DELEGATED_RESOURCE("getdelegatedresource", GetDelegatedResourceServlet.class,
       Access.READ, Surface.FULL, Surface.SOLIDITY, Surface.PBFT, Surface.SOLIDITY_NODE),
 
+  GET_DELEGATED_RESOURCE_V2("getdelegatedresourcev2", GetDelegatedResourceV2Servlet.class,
+      Access.READ, Surface.FULL, Surface.SOLIDITY, Surface.PBFT, Surface.SOLIDITY_NODE),
+
+  GET_CAN_DELEGATED_MAX_SIZE("getcandelegatedmaxsize", GetCanDelegatedMaxSizeServlet.class,
+      Access.READ, Surface.FULL, Surface.SOLIDITY, Surface.PBFT, Surface.SOLIDITY_NODE),
+
+  GET_AVAILABLE_UNFREEZE_COUNT("getavailableunfreezecount", GetAvailableUnfreezeCountServlet.class,
+      Access.READ, Surface.FULL, Surface.SOLIDITY, Surface.PBFT, Surface.SOLIDITY_NODE),
+
+  GET_CAN_WITHDRAW_UNFREEZE_AMOUNT(
+      "getcanwithdrawunfreezeamount",
+      GetCanWithdrawUnfreezeAmountServlet.class,
+      Access.READ, Surface.FULL, Surface.SOLIDITY, Surface.PBFT, Surface.SOLIDITY_NODE),
+
   GET_DELEGATED_RESOURCE_ACCOUNT_INDEX(
       "getdelegatedresourceaccountindex",
       GetDelegatedResourceAccountIndexServlet.class,
+      Access.READ, Surface.FULL, Surface.SOLIDITY, Surface.PBFT, Surface.SOLIDITY_NODE),
+
+  GET_DELEGATED_RESOURCE_ACCOUNT_INDEX_V2(
+      "getdelegatedresourceaccountindexv2",
+      GetDelegatedResourceAccountIndexV2Servlet.class,
       Access.READ, Surface.FULL, Surface.SOLIDITY, Surface.PBFT, Surface.SOLIDITY_NODE),
 
   GET_EXCHANGE_BY_ID("getexchangebyid", GetExchangeByIdServlet.class,
@@ -127,51 +146,25 @@ public enum HttpApiDef {
   GET_BLOCK_BY_LATEST_NUM("getblockbylatestnum", GetBlockByLatestNumServlet.class,
       Access.READ, Surface.FULL, Surface.SOLIDITY, Surface.PBFT, Surface.SOLIDITY_NODE),
 
-  GET_MERKLE_TREE_VOUCHER_INFO("getmerkletreevoucherinfo", GetMerkleTreeVoucherInfoServlet.class,
-      Access.READ, Surface.PBFT),
-
-  SCAN_AND_MARK_NOTE_BY_IVK("scanandmarknotebyivk", ScanAndMarkNoteByIvkServlet.class,
-      Access.READ, Surface.PBFT),
-
-  SCAN_NOTE_BY_IVK("scannotebyivk", ScanNoteByIvkServlet.class,
-      Access.READ, Surface.FULL, Surface.PBFT),
-
-  SCAN_NOTE_BY_OVK("scannotebyovk", ScanNoteByOvkServlet.class,
-      Access.READ, Surface.FULL, Surface.PBFT),
-
-  IS_SPEND("isspend", IsSpendServlet.class,
-      Access.READ, Surface.FULL, Surface.PBFT),
-
-  TRIGGER_CONSTANT_CONTRACT("triggerconstantcontract", TriggerConstantContractServlet.class,
+  SCAN_SHIELDED_TRC20_NOTES_BY_IVK(
+      "scanshieldedtrc20notesbyivk",
+      ScanShieldedTRC20NotesByIvkServlet.class,
       Access.READ, Surface.FULL, Surface.SOLIDITY, Surface.PBFT, Surface.SOLIDITY_NODE),
 
-  ESTIMATE_ENERGY("estimateenergy", EstimateEnergyServlet.class,
+  SCAN_SHIELDED_TRC20_NOTES_BY_OVK(
+      "scanshieldedtrc20notesbyovk",
+      ScanShieldedTRC20NotesByOvkServlet.class,
+      Access.READ, Surface.FULL, Surface.SOLIDITY, Surface.PBFT, Surface.SOLIDITY_NODE),
+
+  IS_SHIELDED_TRC20_CONTRACT_NOTE_SPENT(
+      "isshieldedtrc20contractnotespent",
+      IsShieldedTRC20ContractNoteSpentServlet.class,
       Access.READ, Surface.FULL, Surface.SOLIDITY, Surface.PBFT, Surface.SOLIDITY_NODE),
 
   GET_TRANSACTION_INFO_BY_BLOCK_NUM(
       "gettransactioninfobyblocknum",
       GetTransactionInfoByBlockNumServlet.class,
       Access.READ, Surface.FULL, Surface.SOLIDITY, Surface.SOLIDITY_NODE),
-
-  GET_TRANSACTION_BY_ID("gettransactionbyid", GetTransactionByIdServlet.class,
-      Access.READ, Surface.FULL, Surface.SOLIDITY, Surface.PBFT, Surface.SOLIDITY_NODE),
-
-  GET_TRANSACTION_INFO_BY_ID("gettransactioninfobyid", GetTransactionInfoByIdServlet.class,
-      Access.READ, Surface.FULL, Surface.SOLIDITY, Surface.PBFT, Surface.SOLIDITY_NODE),
-
-  GET_TRANSACTION_COUNT_BY_BLOCK_NUM(
-      "gettransactioncountbyblocknum",
-      GetTransactionCountByBlockNumServlet.class,
-      Access.READ, Surface.FULL, Surface.SOLIDITY, Surface.PBFT, Surface.SOLIDITY_NODE),
-
-  GET_NODE_INFO("getnodeinfo", GetNodeInfoServlet.class,
-      Access.READ, Surface.FULL, Surface.SOLIDITY, Surface.PBFT, Surface.SOLIDITY_NODE),
-
-  GET_BROKERAGE("getBrokerage", GetBrokerageServlet.class,
-      Access.READ, Surface.FULL, Surface.SOLIDITY, Surface.PBFT, Surface.SOLIDITY_NODE),
-
-  GET_REWARD("getReward", GetRewardServlet.class,
-      Access.READ, Surface.FULL, Surface.SOLIDITY, Surface.PBFT, Surface.SOLIDITY_NODE),
 
   GET_MARKET_ORDER_BY_ACCOUNT("getmarketorderbyaccount", GetMarketOrderByAccountServlet.class,
       Access.READ, Surface.FULL, Surface.SOLIDITY, Surface.PBFT, Surface.SOLIDITY_NODE),
@@ -188,22 +181,37 @@ public enum HttpApiDef {
   GET_MARKET_PAIR_LIST("getmarketpairlist", GetMarketPairListServlet.class,
       Access.READ, Surface.FULL, Surface.SOLIDITY, Surface.PBFT, Surface.SOLIDITY_NODE),
 
-  SCAN_SHIELDED_TRC20_NOTES_BY_IVK(
-      "scanshieldedtrc20notesbyivk",
-      ScanShieldedTRC20NotesByIvkServlet.class,
+
+  GET_TRANSACTION_BY_ID("gettransactionbyid", GetTransactionByIdServlet.class,
       Access.READ, Surface.FULL, Surface.SOLIDITY, Surface.PBFT, Surface.SOLIDITY_NODE),
 
-  SCAN_SHIELDED_TRC20_NOTES_BY_OVK(
-      "scanshieldedtrc20notesbyovk",
-      ScanShieldedTRC20NotesByOvkServlet.class,
+  GET_TRANSACTION_INFO_BY_ID("gettransactioninfobyid", GetTransactionInfoByIdServlet.class,
       Access.READ, Surface.FULL, Surface.SOLIDITY, Surface.PBFT, Surface.SOLIDITY_NODE),
 
-  IS_SHIELDED_TRC20_CONTRACT_NOTE_SPENT(
-      "isshieldedtrc20contractnotespent",
-      IsShieldedTRC20ContractNoteSpentServlet.class,
+  GET_TRANSACTION_COUNT_BY_BLOCK_NUM(
+      "gettransactioncountbyblocknum",
+      GetTransactionCountByBlockNumServlet.class,
+      Access.READ, Surface.FULL, Surface.SOLIDITY, Surface.PBFT, Surface.SOLIDITY_NODE),
+
+  TRIGGER_CONSTANT_CONTRACT("triggerconstantcontract", TriggerConstantContractServlet.class,
+      Access.READ, Surface.FULL, Surface.SOLIDITY, Surface.PBFT, Surface.SOLIDITY_NODE),
+
+  ESTIMATE_ENERGY("estimateenergy", EstimateEnergyServlet.class,
+      Access.READ, Surface.FULL, Surface.SOLIDITY, Surface.PBFT, Surface.SOLIDITY_NODE),
+
+  GET_NODE_INFO("getnodeinfo", GetNodeInfoServlet.class,
+      Access.READ, Surface.FULL, Surface.SOLIDITY, Surface.PBFT, Surface.SOLIDITY_NODE),
+
+  GET_BROKERAGE("getBrokerage", GetBrokerageServlet.class,
+      Access.READ, Surface.FULL, Surface.SOLIDITY, Surface.PBFT, Surface.SOLIDITY_NODE),
+
+  GET_REWARD("getReward", GetRewardServlet.class,
       Access.READ, Surface.FULL, Surface.SOLIDITY, Surface.PBFT, Surface.SOLIDITY_NODE),
 
   GET_BURN_TRX("getburntrx", GetBurnTrxServlet.class,
+      Access.READ, Surface.FULL, Surface.SOLIDITY, Surface.PBFT, Surface.SOLIDITY_NODE),
+
+  GET_BLOCK("getblock", GetBlockServlet.class,
       Access.READ, Surface.FULL, Surface.SOLIDITY, Surface.PBFT, Surface.SOLIDITY_NODE),
 
   GET_BANDWIDTH_PRICES("getbandwidthprices", GetBandwidthPricesServlet.class,
@@ -212,27 +220,20 @@ public enum HttpApiDef {
   GET_ENERGY_PRICES("getenergyprices", GetEnergyPricesServlet.class,
       Access.READ, Surface.FULL, Surface.SOLIDITY, Surface.PBFT, Surface.SOLIDITY_NODE),
 
-  GET_BLOCK("getblock", GetBlockServlet.class,
-      Access.READ, Surface.FULL, Surface.SOLIDITY, Surface.PBFT, Surface.SOLIDITY_NODE),
+  GET_MERKLE_TREE_VOUCHER_INFO("getmerkletreevoucherinfo", GetMerkleTreeVoucherInfoServlet.class,
+      Access.READ, Surface.PBFT),
 
-  GET_AVAILABLE_UNFREEZE_COUNT("getavailableunfreezecount", GetAvailableUnfreezeCountServlet.class,
-      Access.READ, Surface.FULL, Surface.SOLIDITY, Surface.PBFT, Surface.SOLIDITY_NODE),
+  SCAN_AND_MARK_NOTE_BY_IVK("scanandmarknotebyivk", ScanAndMarkNoteByIvkServlet.class,
+      Access.READ, Surface.PBFT),
 
-  GET_CAN_DELEGATED_MAX_SIZE("getcandelegatedmaxsize", GetCanDelegatedMaxSizeServlet.class,
-      Access.READ, Surface.FULL, Surface.SOLIDITY, Surface.PBFT, Surface.SOLIDITY_NODE),
+  SCAN_NOTE_BY_IVK("scannotebyivk", ScanNoteByIvkServlet.class,
+      Access.READ, Surface.FULL, Surface.PBFT),
 
-  GET_CAN_WITHDRAW_UNFREEZE_AMOUNT(
-      "getcanwithdrawunfreezeamount",
-      GetCanWithdrawUnfreezeAmountServlet.class,
-      Access.READ, Surface.FULL, Surface.SOLIDITY, Surface.PBFT, Surface.SOLIDITY_NODE),
+  SCAN_NOTE_BY_OVK("scannotebyovk", ScanNoteByOvkServlet.class,
+      Access.READ, Surface.FULL, Surface.PBFT),
 
-  GET_DELEGATED_RESOURCE_ACCOUNT_INDEX_V2(
-      "getdelegatedresourceaccountindexv2",
-      GetDelegatedResourceAccountIndexV2Servlet.class,
-      Access.READ, Surface.FULL, Surface.SOLIDITY, Surface.PBFT, Surface.SOLIDITY_NODE),
-
-  GET_DELEGATED_RESOURCE_V2("getdelegatedresourcev2", GetDelegatedResourceV2Servlet.class,
-      Access.READ, Surface.FULL, Surface.SOLIDITY, Surface.PBFT, Surface.SOLIDITY_NODE);
+  IS_SPEND("isspend", IsSpendServlet.class,
+      Access.READ, Surface.FULL, Surface.PBFT);
 
   /** Http services an endpoint can be exposed on. */
   public enum Surface {

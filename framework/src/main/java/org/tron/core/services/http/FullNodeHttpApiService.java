@@ -23,11 +23,8 @@ import org.tron.core.services.http.servlets.ClearABIServlet;
 import org.tron.core.services.http.servlets.CreateAccountServlet;
 import org.tron.core.services.http.servlets.CreateAssetIssueServlet;
 import org.tron.core.services.http.servlets.CreateCommonTransactionServlet;
-import org.tron.core.services.http.servlets.CreateShieldNullifierServlet;
 import org.tron.core.services.http.servlets.CreateShieldedContractParametersServlet;
 import org.tron.core.services.http.servlets.CreateShieldedContractParametersWithoutAskServlet;
-import org.tron.core.services.http.servlets.CreateShieldedTransactionServlet;
-import org.tron.core.services.http.servlets.CreateShieldedTransactionWithoutSpendAuthSigServlet;
 import org.tron.core.services.http.servlets.CreateSpendAuthSigServlet;
 import org.tron.core.services.http.servlets.CreateWitnessServlet;
 import org.tron.core.services.http.servlets.DelegateResourceServlet;
@@ -80,7 +77,6 @@ import org.tron.core.services.http.servlets.GetMarketOrderListByPairServlet;
 import org.tron.core.services.http.servlets.GetMarketPairListServlet;
 import org.tron.core.services.http.servlets.GetMarketPriceByPairServlet;
 import org.tron.core.services.http.servlets.GetMemoFeePricesServlet;
-import org.tron.core.services.http.servlets.GetMerkleTreeVoucherInfoServlet;
 import org.tron.core.services.http.servlets.GetNewShieldedAddressServlet;
 import org.tron.core.services.http.servlets.GetNextMaintenanceTimeServlet;
 import org.tron.core.services.http.servlets.GetNkFromNskServlet;
@@ -94,7 +90,6 @@ import org.tron.core.services.http.servlets.GetPendingSizeServlet;
 import org.tron.core.services.http.servlets.GetProposalByIdServlet;
 import org.tron.core.services.http.servlets.GetRcmServlet;
 import org.tron.core.services.http.servlets.GetRewardServlet;
-import org.tron.core.services.http.servlets.GetShieldTransactionHashServlet;
 import org.tron.core.services.http.servlets.GetSpendingKeyServlet;
 import org.tron.core.services.http.servlets.GetTransactionApprovedListServlet;
 import org.tron.core.services.http.servlets.GetTransactionByIdServlet;
@@ -108,7 +103,6 @@ import org.tron.core.services.http.servlets.GetTransactionSignWeightServlet;
 import org.tron.core.services.http.servlets.GetTriggerInputForShieldedTRC20ContractServlet;
 import org.tron.core.services.http.servlets.GetZenPaymentAddressServlet;
 import org.tron.core.services.http.servlets.IsShieldedTRC20ContractNoteSpentServlet;
-import org.tron.core.services.http.servlets.IsSpendServlet;
 import org.tron.core.services.http.servlets.ListExchangesServlet;
 import org.tron.core.services.http.servlets.ListNodesServlet;
 import org.tron.core.services.http.servlets.ListProposalsServlet;
@@ -120,9 +114,6 @@ import org.tron.core.services.http.servlets.ParticipateAssetIssueServlet;
 import org.tron.core.services.http.servlets.ProposalApproveServlet;
 import org.tron.core.services.http.servlets.ProposalCreateServlet;
 import org.tron.core.services.http.servlets.ProposalDeleteServlet;
-import org.tron.core.services.http.servlets.ScanAndMarkNoteByIvkServlet;
-import org.tron.core.services.http.servlets.ScanNoteByIvkServlet;
-import org.tron.core.services.http.servlets.ScanNoteByOvkServlet;
 import org.tron.core.services.http.servlets.ScanShieldedTRC20NotesByIvkServlet;
 import org.tron.core.services.http.servlets.ScanShieldedTRC20NotesByOvkServlet;
 import org.tron.core.services.http.servlets.SetAccountIdServlet;
@@ -317,28 +308,9 @@ public class FullNodeHttpApiService extends HttpService {
   @Autowired
   private GetZenPaymentAddressServlet getZenPaymentAddressServlet;
   @Autowired
-  private CreateShieldedTransactionServlet createShieldedTransactionServlet;
-  @Autowired
-  private ScanNoteByIvkServlet scanNoteByIvkServlet;
-  @Autowired
-  private ScanAndMarkNoteByIvkServlet scanAndMarkNoteByIvkServlet;
-  @Autowired
-  private ScanNoteByOvkServlet scanNoteByOvkServlet;
-  @Autowired
   private GetRcmServlet getRcmServlet;
   @Autowired
   private CreateSpendAuthSigServlet createSpendAuthSigServlet;
-  @Autowired
-  private CreateShieldNullifierServlet createShieldNullifierServlet;
-  @Autowired
-  private GetShieldTransactionHashServlet getShieldTransactionHashServlet;
-  @Autowired
-  private GetMerkleTreeVoucherInfoServlet getMerkleTreeVoucherInfoServlet;
-  @Autowired
-  private IsSpendServlet isSpendServlet;
-  @Autowired
-  private CreateShieldedTransactionWithoutSpendAuthSigServlet
-      createShieldedTransactionWithoutSpendAuthSigServlet;
   @Autowired
   private BroadcastHexServlet broadcastHexServlet;
   @Autowired
@@ -557,24 +529,9 @@ public class FullNodeHttpApiService extends HttpService {
         "/wallet/getincomingviewingkey");
     context.addServlet(new ServletHolder(getZenPaymentAddressServlet),
         "/wallet/getzenpaymentaddress");
-    //      context.addServlet(new ServletHolder(createShieldedTransactionServlet),
-    //          "/wallet/createshieldedtransaction");
-    //  context.addServlet(new ServletHolder(createShieldedTransactionWithoutSpendAuthSigServlet),
-    //          "/wallet/createshieldedtransactionwithoutspendauthsig");
-    //      context.addServlet(new ServletHolder(scanNoteByIvkServlet), "/wallet/scannotebyivk");
-    //      context.addServlet(new ServletHolder(scanAndMarkNoteByIvkServlet),
-    //          "/wallet/scanandmarknotebyivk");
-    //      context.addServlet(new ServletHolder(scanNoteByOvkServlet), "/wallet/scannotebyovk");
     context.addServlet(new ServletHolder(getRcmServlet), "/wallet/getrcm");
-    //      context.addServlet(new ServletHolder(getMerkleTreeVoucherInfoServlet),
-    //          "/wallet/getmerkletreevoucherinfo");
-    //      context.addServlet(new ServletHolder(isSpendServlet), "/wallet/isspend");
     context.addServlet(new ServletHolder(createSpendAuthSigServlet),
         "/wallet/createspendauthsig");
-    //      context.addServlet(new ServletHolder(createShieldNullifierServlet),
-    //          "/wallet/createshieldnullifier");
-    //      context.addServlet(new ServletHolder(getShieldTransactionHashServlet),
-    //      "/wallet/getshieldtransactionhash");
 
     context
         .addServlet(new ServletHolder(isShieldedTRC20ContractNoteSpentServlet),
