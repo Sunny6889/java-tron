@@ -244,7 +244,7 @@ public enum HttpApiDef {
   GET_PAGINATED_NOW_WITNESS_LIST(
       "getpaginatednowwitnesslist",
       GetPaginatedNowWitnessListServlet.class,
-      Access.READ, Surface.FULL, Surface.SOLIDITY, Surface.SOLIDITY_NODE),
+      Access.READ, Surface.FULL, Surface.SOLIDITY, Surface.PBFT, Surface.SOLIDITY_NODE),
 
   GET_ASSET_ISSUE_LIST("getassetissuelist", GetAssetIssueListServlet.class,
       Access.READ, Surface.FULL, Surface.SOLIDITY, Surface.PBFT, Surface.SOLIDITY_NODE),
@@ -461,7 +461,7 @@ public enum HttpApiDef {
   GET_TRANSACTION_INFO_BY_BLOCK_NUM(
       "gettransactioninfobyblocknum",
       GetTransactionInfoByBlockNumServlet.class,
-      Access.READ, Surface.FULL, Surface.SOLIDITY, Surface.SOLIDITY_NODE),
+      Access.READ, Surface.FULL, Surface.SOLIDITY, Surface.PBFT, Surface.SOLIDITY_NODE),
 
   MARKET_SELL_ASSET("marketsellasset", MarketSellAssetServlet.class,
       Access.BUILD, Surface.FULL),
