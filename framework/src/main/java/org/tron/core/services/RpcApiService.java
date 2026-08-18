@@ -181,6 +181,8 @@ public class RpcApiService extends RpcService {
   private MetricsApiService metricsApiService;
   @Getter
   private DatabaseApi databaseApi = new DatabaseApi();
+  // WalletApi is the full protocol.Wallet impl (HEAD); WalletSolidityApi is its read-only subset,
+  // reused by the Solidity/PBFT cursor ports and pinned by WalletSolidityApiMethodSubsetTest.
   private WalletApi walletApi = new WalletApi();
   @Getter
   private WalletSolidityApi walletSolidityApi = new WalletSolidityApi();
@@ -362,7 +364,9 @@ public class RpcApiService extends RpcService {
   }
 
   /**
-   * WalletSolidityApi.
+   * WalletSolidityApi is the full implementation of the {@code protocol.WalletSolidity} gRPC
+   * service. Every method here is read-only and also present on {@link WalletApi}: this is a
+   * read-only subset of {@code WalletApi}, guarded by {@code WalletSolidityApiMethodSubsetTest}.
    */
   public class WalletSolidityApi extends WalletSolidityImplBase {
 
@@ -953,7 +957,9 @@ public class RpcApiService extends RpcService {
   }
 
   /**
-   * WalletApi.
+   * WalletApi is the full implementation of the {@code protocol.Wallet} gRPC service, including
+   * write and build endpoints. {@link WalletSolidityApi} is the read-only subset of this surface,
+   * pinned by {@code WalletSolidityApiMethodSubsetTest}.
    */
   public class WalletApi extends WalletImplBase {
 
