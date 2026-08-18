@@ -51,7 +51,7 @@ public class HttpApiDefTest {
     Assert.assertEquals(120, HttpApiDef.values().length);
     Assert.assertEquals(120, HttpApiDef.forSurface(HttpApiDef.Surface.FULL).size());
     Assert.assertEquals(44, HttpApiDef.forSurface(HttpApiDef.Surface.SOLIDITY).size());
-    Assert.assertEquals(42, HttpApiDef.forSurface(HttpApiDef.Surface.PBFT).size());
+    Assert.assertEquals(44, HttpApiDef.forSurface(HttpApiDef.Surface.PBFT).size());
     Assert.assertEquals(44, HttpApiDef.forSurface(HttpApiDef.Surface.SOLIDITY_NODE).size());
   }
 
