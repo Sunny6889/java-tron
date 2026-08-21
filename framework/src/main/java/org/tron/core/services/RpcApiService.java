@@ -396,34 +396,25 @@ public class RpcApiService extends RpcService {
 
     @Override
     public void listWitnesses(EmptyMessage request, StreamObserver<WitnessList> responseObserver) {
-      responseObserver.onNext(wallet.getWitnessList());
-      responseObserver.onCompleted();
+      walletApi.listWitnesses(request, responseObserver);
     }
 
     @Override
     public void getPaginatedNowWitnessList(PaginatedMessage request,
         StreamObserver<WitnessList> responseObserver) {
-      try {
-        responseObserver.onNext(
-            wallet.getPaginatedNowWitnessList(request.getOffset(), request.getLimit()));
-      } catch (MaintenanceUnavailableException e) {
-        responseObserver.onError(getRunTimeException(e));
-      }
-      responseObserver.onCompleted();
+      walletApi.getPaginatedNowWitnessList(request, responseObserver);
     }
 
     @Override
     public void getAssetIssueList(EmptyMessage request,
         StreamObserver<AssetIssueList> responseObserver) {
-      responseObserver.onNext(wallet.getAssetIssueList());
-      responseObserver.onCompleted();
+      walletApi.getAssetIssueList(request, responseObserver);
     }
 
     @Override
     public void getPaginatedAssetIssueList(PaginatedMessage request,
         StreamObserver<AssetIssueList> responseObserver) {
-      responseObserver.onNext(wallet.getAssetIssueList(request.getOffset(), request.getLimit()));
-      responseObserver.onCompleted();
+      walletApi.getPaginatedAssetIssueList(request, responseObserver);
     }
 
     @Override
@@ -446,33 +437,18 @@ public class RpcApiService extends RpcService {
     @Override
     public void getAssetIssueListByName(BytesMessage request,
         StreamObserver<AssetIssueList> responseObserver) {
-      ByteString assetName = request.getValue();
-
-      if (assetName != null) {
-        responseObserver.onNext(wallet.getAssetIssueListByName(assetName));
-      } else {
-        responseObserver.onNext(null);
-      }
-      responseObserver.onCompleted();
+      walletApi.getAssetIssueListByName(request, responseObserver);
     }
 
     @Override
     public void getAssetIssueById(BytesMessage request,
         StreamObserver<AssetIssueContract> responseObserver) {
-      ByteString assetId = request.getValue();
-
-      if (assetId != null) {
-        responseObserver.onNext(wallet.getAssetIssueById(assetId.toStringUtf8()));
-      } else {
-        responseObserver.onNext(null);
-      }
-      responseObserver.onCompleted();
+      walletApi.getAssetIssueById(request, responseObserver);
     }
 
     @Override
     public void getNowBlock(EmptyMessage request, StreamObserver<Block> responseObserver) {
-      responseObserver.onNext(wallet.getNowBlock());
-      responseObserver.onCompleted();
+      walletApi.getNowBlock(request, responseObserver);
     }
 
     @Override
@@ -511,46 +487,25 @@ public class RpcApiService extends RpcService {
     @Override
     public void getDelegatedResource(DelegatedResourceMessage request,
         StreamObserver<DelegatedResourceList> responseObserver) {
-      responseObserver
-          .onNext(wallet.getDelegatedResource(request.getFromAddress(), request.getToAddress()));
-      responseObserver.onCompleted();
+      walletApi.getDelegatedResource(request, responseObserver);
     }
 
     @Override
     public void getDelegatedResourceV2(DelegatedResourceMessage request,
         StreamObserver<DelegatedResourceList> responseObserver) {
-      try {
-        responseObserver.onNext(wallet.getDelegatedResourceV2(
-                request.getFromAddress(), request.getToAddress())
-        );
-      } catch (Exception e) {
-        responseObserver.onError(getRunTimeException(e));
-      }
-      responseObserver.onCompleted();
+      walletApi.getDelegatedResourceV2(request, responseObserver);
     }
 
     @Override
     public void getDelegatedResourceAccountIndex(BytesMessage request,
         StreamObserver<org.tron.protos.Protocol.DelegatedResourceAccountIndex> responseObserver) {
-      try {
-        responseObserver
-          .onNext(wallet.getDelegatedResourceAccountIndex(request.getValue()));
-      } catch (Exception e) {
-        responseObserver.onError(getRunTimeException(e));
-      }
-      responseObserver.onCompleted();
+      walletApi.getDelegatedResourceAccountIndex(request, responseObserver);
     }
 
     @Override
     public void getDelegatedResourceAccountIndexV2(BytesMessage request,
         StreamObserver<org.tron.protos.Protocol.DelegatedResourceAccountIndex> responseObserver) {
-      try {
-        responseObserver
-                .onNext(wallet.getDelegatedResourceAccountIndexV2(request.getValue()));
-      } catch (Exception e) {
-        responseObserver.onError(getRunTimeException(e));
-      }
-      responseObserver.onCompleted();
+      walletApi.getDelegatedResourceAccountIndexV2(request, responseObserver);
     }
 
     @Override
@@ -568,13 +523,7 @@ public class RpcApiService extends RpcService {
     @Override
     public void getAvailableUnfreezeCount(GrpcAPI.GetAvailableUnfreezeCountRequestMessage request,
         StreamObserver<GrpcAPI.GetAvailableUnfreezeCountResponseMessage> responseObserver) {
-      try {
-        responseObserver.onNext(wallet.getAvailableUnfreezeCount(
-                request.getOwnerAddress()));
-      } catch (Exception e) {
-        responseObserver.onError(getRunTimeException(e));
-      }
-      responseObserver.onCompleted();
+      walletApi.getAvailableUnfreezeCount(request, responseObserver);
     }
 
     @Override
@@ -594,21 +543,13 @@ public class RpcApiService extends RpcService {
     @Override
     public void getExchangeById(BytesMessage request,
         StreamObserver<Exchange> responseObserver) {
-      ByteString exchangeId = request.getValue();
-
-      if (Objects.nonNull(exchangeId)) {
-        responseObserver.onNext(wallet.getExchangeById(exchangeId));
-      } else {
-        responseObserver.onNext(null);
-      }
-      responseObserver.onCompleted();
+      walletApi.getExchangeById(request, responseObserver);
     }
 
     @Override
     public void listExchanges(EmptyMessage request,
         StreamObserver<ExchangeList> responseObserver) {
-      responseObserver.onNext(wallet.getExchangeList());
-      responseObserver.onCompleted();
+      walletApi.listExchanges(request, responseObserver);
     }
 
     @Override
@@ -634,15 +575,7 @@ public class RpcApiService extends RpcService {
     @Override
     public void getTransactionInfoById(BytesMessage request,
         StreamObserver<TransactionInfo> responseObserver) {
-      ByteString id = request.getValue();
-      if (null != id) {
-        TransactionInfo reply = wallet.getTransactionInfoById(id);
-
-        responseObserver.onNext(reply);
-      } else {
-        responseObserver.onNext(null);
-      }
-      responseObserver.onCompleted();
+      walletApi.getTransactionInfoById(request, responseObserver);
     }
 
     @Override
@@ -792,71 +725,31 @@ public class RpcApiService extends RpcService {
     @Override
     public void getMarketOrderByAccount(BytesMessage request,
         StreamObserver<MarketOrderList> responseObserver) {
-      try {
-        ByteString address = request.getValue();
-
-        MarketOrderList marketOrderList = wallet
-            .getMarketOrderByAccount(address);
-        responseObserver.onNext(marketOrderList);
-      } catch (Exception e) {
-        responseObserver.onError(getRunTimeException(e));
-      }
-      responseObserver.onCompleted();
+      walletApi.getMarketOrderByAccount(request, responseObserver);
     }
 
     @Override
     public void getMarketOrderById(BytesMessage request,
         StreamObserver<MarketOrder> responseObserver) {
-      try {
-        ByteString address = request.getValue();
-
-        MarketOrder marketOrder = wallet
-            .getMarketOrderById(address);
-        responseObserver.onNext(marketOrder);
-      } catch (Exception e) {
-        responseObserver.onError(getRunTimeException(e));
-      }
-      responseObserver.onCompleted();
+      walletApi.getMarketOrderById(request, responseObserver);
     }
 
     @Override
     public void getMarketPriceByPair(MarketOrderPair request,
         StreamObserver<MarketPriceList> responseObserver) {
-      try {
-        MarketPriceList marketPriceList = wallet
-            .getMarketPriceByPair(request.getSellTokenId().toByteArray(),
-                request.getBuyTokenId().toByteArray());
-        responseObserver.onNext(marketPriceList);
-      } catch (Exception e) {
-        responseObserver.onError(getRunTimeException(e));
-      }
-      responseObserver.onCompleted();
+      walletApi.getMarketPriceByPair(request, responseObserver);
     }
 
     @Override
     public void getMarketOrderListByPair(org.tron.protos.Protocol.MarketOrderPair request,
         StreamObserver<MarketOrderList> responseObserver) {
-      try {
-        MarketOrderList orderPairList = wallet
-            .getMarketOrderListByPair(request.getSellTokenId().toByteArray(),
-                request.getBuyTokenId().toByteArray());
-        responseObserver.onNext(orderPairList);
-      } catch (Exception e) {
-        responseObserver.onError(getRunTimeException(e));
-      }
-      responseObserver.onCompleted();
+      walletApi.getMarketOrderListByPair(request, responseObserver);
     }
 
     @Override
     public void getMarketPairList(EmptyMessage request,
         StreamObserver<MarketOrderPairList> responseObserver) {
-      try {
-        MarketOrderPairList pairList = wallet.getMarketPairList();
-        responseObserver.onNext(pairList);
-      } catch (Exception e) {
-        responseObserver.onError(getRunTimeException(e));
-      }
-      responseObserver.onCompleted();
+      walletApi.getMarketPairList(request, responseObserver);
     }
 
     @Override
@@ -869,45 +762,13 @@ public class RpcApiService extends RpcService {
     @Override
     public void estimateEnergy(TriggerSmartContract request,
         StreamObserver<EstimateEnergyMessage> responseObserver) {
-      TransactionExtention.Builder trxExtBuilder = TransactionExtention.newBuilder();
-      Return.Builder retBuilder = Return.newBuilder();
-      EstimateEnergyMessage.Builder estimateBuilder
-          = EstimateEnergyMessage.newBuilder();
-
-      try {
-        TransactionCapsule trxCap = createTransactionCapsule(request,
-            ContractType.TriggerSmartContract);
-        wallet.estimateEnergy(request, trxCap, trxExtBuilder, retBuilder, estimateBuilder);
-      } catch (ContractValidateException | VMIllegalException e) {
-        retBuilder.setResult(false).setCode(response_code.CONTRACT_VALIDATE_ERROR)
-            .setMessage(ByteString.copyFromUtf8(Wallet
-                .CONTRACT_VALIDATE_ERROR + e.getMessage()));
-        logger.warn(CONTRACT_VALIDATE_EXCEPTION, e.getMessage());
-      } catch (RuntimeException e) {
-        retBuilder.setResult(false).setCode(response_code.CONTRACT_EXE_ERROR)
-            .setMessage(ByteString.copyFromUtf8(e.getClass() + " : " + e.getMessage()));
-        logger.warn("When run estimate energy in VM, have Runtime Exception: " + e.getMessage());
-      } catch (Exception e) {
-        retBuilder.setResult(false).setCode(response_code.OTHER_ERROR)
-            .setMessage(ByteString.copyFromUtf8(e.getClass() + " : " + e.getMessage()));
-        logger.warn(UNKNOWN_EXCEPTION_CAUGHT + e.getMessage(), e);
-      } finally {
-        estimateBuilder.setResult(retBuilder);
-        responseObserver.onNext(estimateBuilder.build());
-        responseObserver.onCompleted();
-      }
+      walletApi.estimateEnergy(request, responseObserver);
     }
 
     @Override
     public void getTransactionInfoByBlockNum(NumberMessage request,
         StreamObserver<TransactionInfoList> responseObserver) {
-      try {
-        responseObserver.onNext(wallet.getTransactionInfoByBlockNum(request.getNum()));
-      } catch (Exception e) {
-        responseObserver.onError(getRunTimeException(e));
-      }
-
-      responseObserver.onCompleted();
+      walletApi.getTransactionInfoByBlockNum(request, responseObserver);
     }
 
     @Override
@@ -919,23 +780,13 @@ public class RpcApiService extends RpcService {
     @Override
     public void getBandwidthPrices(EmptyMessage request,
         StreamObserver<PricesResponseMessage> responseObserver) {
-      try {
-        responseObserver.onNext(wallet.getBandwidthPrices());
-      } catch (Exception e) {
-        responseObserver.onError(getRunTimeException(e));
-      }
-      responseObserver.onCompleted();
+      walletApi.getBandwidthPrices(request, responseObserver);
     }
 
     @Override
     public void getEnergyPrices(EmptyMessage request,
         StreamObserver<PricesResponseMessage> responseObserver) {
-      try {
-        responseObserver.onNext(wallet.getEnergyPrices());
-      } catch (Exception e) {
-        responseObserver.onError(getRunTimeException(e));
-      }
-      responseObserver.onCompleted();
+      walletApi.getEnergyPrices(request, responseObserver);
     }
   }
 
