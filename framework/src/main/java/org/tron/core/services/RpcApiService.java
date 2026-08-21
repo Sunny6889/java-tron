@@ -372,26 +372,12 @@ public class RpcApiService extends RpcService {
 
     @Override
     public void getAccount(Account request, StreamObserver<Account> responseObserver) {
-      ByteString addressBs = request.getAddress();
-      if (addressBs != null) {
-        Account reply = wallet.getAccount(request);
-        responseObserver.onNext(reply);
-      } else {
-        responseObserver.onNext(null);
-      }
-      responseObserver.onCompleted();
+      walletApi.getAccount(request, responseObserver);
     }
 
     @Override
     public void getAccountById(Account request, StreamObserver<Account> responseObserver) {
-      ByteString id = request.getAccountId();
-      if (id != null) {
-        Account reply = wallet.getAccountById(request);
-        responseObserver.onNext(reply);
-      } else {
-        responseObserver.onNext(null);
-      }
-      responseObserver.onCompleted();
+      walletApi.getAccountById(request, responseObserver);
     }
 
     @Override
@@ -420,18 +406,7 @@ public class RpcApiService extends RpcService {
     @Override
     public void getAssetIssueByName(BytesMessage request,
         StreamObserver<AssetIssueContract> responseObserver) {
-      ByteString assetName = request.getValue();
-      if (assetName != null) {
-        try {
-          responseObserver.onNext(wallet.getAssetIssueByName(assetName));
-        } catch (NonUniqueObjectException e) {
-          responseObserver.onNext(null);
-          logger.debug("Solidity NonUniqueObjectException: {}", e.getMessage());
-        }
-      } else {
-        responseObserver.onNext(null);
-      }
-      responseObserver.onCompleted();
+      walletApi.getAssetIssueByName(request, responseObserver);
     }
 
     @Override
@@ -454,33 +429,18 @@ public class RpcApiService extends RpcService {
     @Override
     public void getNowBlock2(EmptyMessage request,
         StreamObserver<BlockExtention> responseObserver) {
-      responseObserver.onNext(block2Extention(wallet.getNowBlock()));
-      responseObserver.onCompleted();
+      walletApi.getNowBlock2(request, responseObserver);
     }
 
     @Override
     public void getBlockByNum(NumberMessage request, StreamObserver<Block> responseObserver) {
-      long num = request.getNum();
-      if (num >= 0) {
-        Block reply = wallet.getBlockByNum(num);
-        responseObserver.onNext(reply);
-      } else {
-        responseObserver.onNext(null);
-      }
-      responseObserver.onCompleted();
+      walletApi.getBlockByNum(request, responseObserver);
     }
 
     @Override
     public void getBlockByNum2(NumberMessage request,
         StreamObserver<BlockExtention> responseObserver) {
-      long num = request.getNum();
-      if (num >= 0) {
-        Block reply = wallet.getBlockByNum(num);
-        responseObserver.onNext(block2Extention(reply));
-      } else {
-        responseObserver.onNext(null);
-      }
-      responseObserver.onCompleted();
+      walletApi.getBlockByNum2(request, responseObserver);
     }
 
 
@@ -511,13 +471,7 @@ public class RpcApiService extends RpcService {
     @Override
     public void getCanDelegatedMaxSize(GrpcAPI.CanDelegatedMaxSizeRequestMessage request,
         StreamObserver<GrpcAPI.CanDelegatedMaxSizeResponseMessage> responseObserver) {
-      try {
-        responseObserver.onNext(wallet.getCanDelegatedMaxSize(
-                        request.getOwnerAddress(),request.getType()));
-      } catch (Exception e) {
-        responseObserver.onError(getRunTimeException(e));
-      }
-      responseObserver.onCompleted();
+      walletApi.getCanDelegatedMaxSize(request, responseObserver);
     }
 
     @Override
@@ -529,15 +483,7 @@ public class RpcApiService extends RpcService {
     @Override
     public void getCanWithdrawUnfreezeAmount(CanWithdrawUnfreezeAmountRequestMessage request,
         StreamObserver<GrpcAPI.CanWithdrawUnfreezeAmountResponseMessage> responseObserver) {
-      try {
-        responseObserver
-                .onNext(wallet.getCanWithdrawUnfreezeAmount(
-                        request.getOwnerAddress(), request.getTimestamp())
-        );
-      } catch (Exception e) {
-        responseObserver.onError(getRunTimeException(e));
-      }
-      responseObserver.onCompleted();
+      walletApi.getCanWithdrawUnfreezeAmount(request, responseObserver);
     }
 
     @Override
@@ -561,15 +507,7 @@ public class RpcApiService extends RpcService {
     @Override
     public void getTransactionById(BytesMessage request,
         StreamObserver<Transaction> responseObserver) {
-      ByteString id = request.getValue();
-      if (null != id) {
-        Transaction reply = wallet.getTransactionById(id);
-
-        responseObserver.onNext(reply);
-      } else {
-        responseObserver.onNext(null);
-      }
-      responseObserver.onCompleted();
+      walletApi.getTransactionById(request, responseObserver);
     }
 
     @Override
@@ -598,128 +536,48 @@ public class RpcApiService extends RpcService {
     @Override
     public void getMerkleTreeVoucherInfo(OutputPointInfo request,
         StreamObserver<IncrementalMerkleVoucherInfo> responseObserver) {
-
-      try {
-        IncrementalMerkleVoucherInfo witnessInfo = wallet
-            .getMerkleTreeVoucherInfo(request);
-        responseObserver.onNext(witnessInfo);
-      } catch (Exception ex) {
-        responseObserver.onError(getRunTimeException(ex));
-      }
-      responseObserver.onCompleted();
+      walletApi.getMerkleTreeVoucherInfo(request, responseObserver);
     }
 
     @Override
     public void scanNoteByIvk(GrpcAPI.IvkDecryptParameters request,
         StreamObserver<GrpcAPI.DecryptNotes> responseObserver) {
-      long startNum = request.getStartBlockIndex();
-      long endNum = request.getEndBlockIndex();
-
-      try {
-        DecryptNotes decryptNotes = wallet
-            .scanNoteByIvk(startNum, endNum, request.getIvk().toByteArray());
-        responseObserver.onNext(decryptNotes);
-      } catch (BadItemException | ZksnarkException e) {
-        responseObserver.onError(getRunTimeException(e));
-      }
-      responseObserver.onCompleted();
+      walletApi.scanNoteByIvk(request, responseObserver);
     }
 
     @Override
     public void scanAndMarkNoteByIvk(GrpcAPI.IvkDecryptAndMarkParameters request,
         StreamObserver<GrpcAPI.DecryptNotesMarked> responseObserver) {
-      long startNum = request.getStartBlockIndex();
-      long endNum = request.getEndBlockIndex();
-
-      try {
-        DecryptNotesMarked decryptNotes = wallet.scanAndMarkNoteByIvk(startNum, endNum,
-            request.getIvk().toByteArray(),
-            request.getAk().toByteArray(),
-            request.getNk().toByteArray());
-        responseObserver.onNext(decryptNotes);
-      } catch (BadItemException | ZksnarkException | InvalidProtocolBufferException
-          | ItemNotFoundException e) {
-        responseObserver.onError(getRunTimeException(e));
-      }
-      responseObserver.onCompleted();
+      walletApi.scanAndMarkNoteByIvk(request, responseObserver);
     }
 
     @Override
     public void scanNoteByOvk(GrpcAPI.OvkDecryptParameters request,
         StreamObserver<GrpcAPI.DecryptNotes> responseObserver) {
-      long startNum = request.getStartBlockIndex();
-      long endNum = request.getEndBlockIndex();
-      try {
-        DecryptNotes decryptNotes = wallet
-            .scanNoteByOvk(startNum, endNum, request.getOvk().toByteArray());
-        responseObserver.onNext(decryptNotes);
-      } catch (BadItemException | ZksnarkException e) {
-        responseObserver.onError(getRunTimeException(e));
-      }
-      responseObserver.onCompleted();
+      walletApi.scanNoteByOvk(request, responseObserver);
     }
 
     @Override
     public void isSpend(NoteParameters request, StreamObserver<SpendResult> responseObserver) {
-      try {
-        responseObserver.onNext(wallet.isSpend(request));
-      } catch (Exception e) {
-        responseObserver.onError(getRunTimeException(e));
-      }
-      responseObserver.onCompleted();
+      walletApi.isSpend(request, responseObserver);
     }
 
     @Override
     public void scanShieldedTRC20NotesByIvk(IvkDecryptTRC20Parameters request,
         StreamObserver<DecryptNotesTRC20> responseObserver) {
-      if (rejectIfEventsPresent(responseObserver, request.getEventsList())) {
-        return;
-      }
-      long startNum = request.getStartBlockIndex();
-      long endNum = request.getEndBlockIndex();
-      byte[] contractAddress = request.getShieldedTRC20ContractAddress().toByteArray();
-      byte[] ivk = request.getIvk().toByteArray();
-      byte[] ak = request.getAk().toByteArray();
-      byte[] nk = request.getNk().toByteArray();
-
-      try {
-        responseObserver.onNext(
-            wallet.scanShieldedTRC20NotesByIvk(startNum, endNum, contractAddress, ivk, ak, nk));
-
-      } catch (Exception e) {
-        responseObserver.onError(getRunTimeException(e));
-      }
-      responseObserver.onCompleted();
+      walletApi.scanShieldedTRC20NotesByIvk(request, responseObserver);
     }
 
     @Override
     public void scanShieldedTRC20NotesByOvk(OvkDecryptTRC20Parameters request,
         StreamObserver<DecryptNotesTRC20> responseObserver) {
-      if (rejectIfEventsPresent(responseObserver, request.getEventsList())) {
-        return;
-      }
-      long startNum = request.getStartBlockIndex();
-      long endNum = request.getEndBlockIndex();
-      byte[] contractAddress = request.getShieldedTRC20ContractAddress().toByteArray();
-      byte[] ovk = request.getOvk().toByteArray();
-      try {
-        responseObserver
-            .onNext(wallet.scanShieldedTRC20NotesByOvk(startNum, endNum, ovk, contractAddress));
-      } catch (Exception e) {
-        responseObserver.onError(getRunTimeException(e));
-      }
-      responseObserver.onCompleted();
+      walletApi.scanShieldedTRC20NotesByOvk(request, responseObserver);
     }
 
     @Override
     public void isShieldedTRC20ContractNoteSpent(NfTRC20Parameters request,
         StreamObserver<GrpcAPI.NullifierResult> responseObserver) {
-      try {
-        responseObserver.onNext(wallet.isShieldedTRC20ContractNoteSpent(request));
-      } catch (Exception e) {
-        responseObserver.onError(getRunTimeException(e));
-      }
-      responseObserver.onCompleted();
+      walletApi.isShieldedTRC20ContractNoteSpent(request, responseObserver);
     }
 
     @Override
@@ -1336,15 +1194,26 @@ public class RpcApiService extends RpcService {
 
     @Override
     public void getBlockByNum(NumberMessage request, StreamObserver<Block> responseObserver) {
-      responseObserver.onNext(wallet.getBlockByNum(request.getNum()));
+      long num = request.getNum();
+      if (num >= 0) {
+        Block reply = wallet.getBlockByNum(num);
+        responseObserver.onNext(reply);
+      } else {
+        responseObserver.onNext(null);
+      }
       responseObserver.onCompleted();
     }
 
     @Override
     public void getBlockByNum2(NumberMessage request,
         StreamObserver<BlockExtention> responseObserver) {
-      Block block = wallet.getBlockByNum(request.getNum());
-      responseObserver.onNext(block2Extention(block));
+      long num = request.getNum();
+      if (num >= 0) {
+        Block reply = wallet.getBlockByNum(num);
+        responseObserver.onNext(block2Extention(reply));
+      } else {
+        responseObserver.onNext(null);
+      }
       responseObserver.onCompleted();
     }
 
@@ -1451,7 +1320,7 @@ public class RpcApiService extends RpcService {
           responseObserver.onNext(wallet.getAssetIssueByName(assetName));
         } catch (NonUniqueObjectException e) {
           responseObserver.onNext(null);
-          logger.debug("FullNode NonUniqueObjectException: {}", e.getMessage());
+          logger.debug("NonUniqueObjectException: {}", e.getMessage());
         }
       } else {
         responseObserver.onNext(null);
