@@ -7,11 +7,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tron.api.GrpcAPI.ProposalList;
 import org.tron.core.Wallet;
-import org.tron.core.services.http.JsonFormat;
-import org.tron.core.services.http.Util;
+import org.tron.core.services.http.HttpApi;
+import org.tron.core.services.http.HttpApi.Access;
+import org.tron.core.services.http.HttpApi.Surface;
 
 @Component
 @Slf4j(topic = "API")
+@HttpApi(value = "listproposals", access = Access.READ,
+    surfaces = {Surface.FULL})
 public class ListProposalsServlet extends RateLimiterServlet {
 
   @Autowired

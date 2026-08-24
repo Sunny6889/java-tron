@@ -13,7 +13,8 @@ import org.tron.core.config.args.Args;
 import org.tron.core.services.filter.HttpApiAccessFilter;
 import org.tron.core.services.filter.LiteFnQueryHttpFilter;
 import org.tron.core.services.filter.SolidityCursorFilter;
-import org.tron.core.services.http.HttpApiDef;
+import org.tron.core.services.http.HttpApi;
+import org.tron.core.services.http.HttpApiRegistry;
 import org.tron.core.services.http.servlets.GetNodeInfoServlet;
 
 @Slf4j(topic = "API")
@@ -49,7 +50,7 @@ public class HttpApiOnSolidityService extends HttpService {
    * context; getnodeinfo is additionally reachable under the fullnode prefix on this port.
    */
   protected void addServletsFromRegistry(ServletContextHandler context) {
-    for (HttpApiDef def : HttpApiDef.forSurface(HttpApiDef.Surface.SOLIDITY)) {
+    for (HttpApiRegistry.Entry def : HttpApiRegistry.forSurface(HttpApi.Surface.SOLIDITY)) {
       context.addServlet(new ServletHolder(appContext.getBean(def.getServlet())),
           "/walletsolidity/" + def.getSuffix());
     }

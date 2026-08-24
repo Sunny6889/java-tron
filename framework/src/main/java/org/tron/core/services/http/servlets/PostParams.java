@@ -1,7 +1,7 @@
-package org.tron.core.services.http;
+package org.tron.core.services.http.servlets;
 
 import static org.apache.http.entity.ContentType.APPLICATION_FORM_URLENCODED;
-import static org.tron.core.services.http.Util.getJsonString;
+import static org.tron.core.services.http.servlets.Util.getJsonString;
 
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;

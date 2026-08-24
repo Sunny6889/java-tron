@@ -52,7 +52,7 @@ public class FullNodeHttpApiService extends HttpService {
    * {@link #addFilter}.
    */
   protected void addServletsFromRegistry(ServletContextHandler context) {
-    for (HttpApiDef def : HttpApiDef.forSurface(HttpApiDef.Surface.FULL)) {
+    for (HttpApiRegistry.Entry def : HttpApiRegistry.forSurface(HttpApi.Surface.FULL)) {
       context.addServlet(new ServletHolder(appContext.getBean(def.getServlet())),
           "/wallet/" + def.getSuffix());
     }

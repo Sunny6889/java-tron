@@ -6,14 +6,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tron.core.Wallet;
-import org.tron.core.services.http.JsonFormat;
-import org.tron.core.services.http.PostParams;
-import org.tron.core.services.http.Util;
+import org.tron.core.services.http.HttpApi;
+import org.tron.core.services.http.HttpApi.Access;
+import org.tron.core.services.http.HttpApi.Surface;
 import org.tron.protos.contract.ShieldContract.IncrementalMerkleVoucherInfo;
 import org.tron.protos.contract.ShieldContract.OutputPointInfo;
 
 @Component
 @Slf4j(topic = "API")
+@HttpApi(value = "getmerkletreevoucherinfo", access = Access.READ,
+    surfaces = {Surface.PBFT})
 public class GetMerkleTreeVoucherInfoServlet extends RateLimiterServlet {
 
   @Autowired

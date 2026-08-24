@@ -10,14 +10,16 @@ import org.springframework.stereotype.Component;
 import org.tron.api.GrpcAPI.BytesMessage;
 import org.tron.common.utils.ByteArray;
 import org.tron.core.Wallet;
-import org.tron.core.services.http.JsonFormat;
-import org.tron.core.services.http.PostParams;
-import org.tron.core.services.http.Util;
+import org.tron.core.services.http.HttpApi;
+import org.tron.core.services.http.HttpApi.Access;
+import org.tron.core.services.http.HttpApi.Surface;
 import org.tron.json.JSONObject;
 import org.tron.protos.Protocol.DelegatedResourceAccountIndex;
 
 @Component
 @Slf4j(topic = "API")
+@HttpApi(value = "getdelegatedresourceaccountindexv2", access = Access.READ,
+    surfaces = {Surface.FULL, Surface.SOLIDITY, Surface.PBFT, Surface.SOLIDITY_NODE})
 public class GetDelegatedResourceAccountIndexV2Servlet extends RateLimiterServlet {
 
   private static final  String VALUE_FIELD_NAME = "value";

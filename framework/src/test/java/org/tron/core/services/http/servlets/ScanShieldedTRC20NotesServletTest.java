@@ -2,7 +2,7 @@ package org.tron.core.services.http.servlets;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.tron.common.utils.client.utils.HttpMethed.createRequest;
-import static org.tron.core.services.http.Util.EVENTS_DEPRECATED_MSG;
+import static org.tron.core.services.http.servlets.Util.EVENTS_DEPRECATED_MSG;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;

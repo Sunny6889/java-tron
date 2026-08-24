@@ -11,12 +11,14 @@ import org.tron.api.GrpcAPI.DelegatedResourceList;
 import org.tron.api.GrpcAPI.DelegatedResourceMessage;
 import org.tron.common.utils.ByteArray;
 import org.tron.core.Wallet;
-import org.tron.core.services.http.JsonFormat;
-import org.tron.core.services.http.PostParams;
-import org.tron.core.services.http.Util;
+import org.tron.core.services.http.HttpApi;
+import org.tron.core.services.http.HttpApi.Access;
+import org.tron.core.services.http.HttpApi.Surface;
 
 @Component
 @Slf4j(topic = "API")
+@HttpApi(value = "getdelegatedresourcev2", access = Access.READ,
+    surfaces = {Surface.FULL, Surface.SOLIDITY, Surface.PBFT, Surface.SOLIDITY_NODE})
 public class GetDelegatedResourceV2Servlet extends RateLimiterServlet {
 
   @Autowired

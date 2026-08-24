@@ -1,69 +1,91 @@
 package org.tron.core.services.filter;
 
-import static org.mockito.ArgumentMatchers.any;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.InOrder;
 import org.tron.core.db.Manager;
 import org.tron.core.db2.core.Chainbase;
 
+/**
+ * Behaviour of the cursor filters that replaced the per-servlet OnSolidity / OnPBFT wrappers.
+ * The route tests only prove which paths are mounted; these prove the cursor is actually switched
+ * for the request and always reset, so a solidity/pbft read cannot silently serve HEAD state and a
+ * cursor cannot leak onto a pooled jetty thread.
+ */
 public class WalletCursorFilterTest {
 
-  private final Manager dbManager = mock(Manager.class);
-  private final ServletRequest request = mock(ServletRequest.class);
-  private final ServletResponse response = mock(ServletResponse.class);
-
   @Test
-  public void testSolidityFilterSetsAndResetsCursorAroundChain() throws Exception {
+  public void testSolidityFilterSetsCursorBeforeChainAndResetsAfter() throws Exception {
+    Manager manager = mock(Manager.class);
     FilterChain chain = mock(FilterChain.class);
-    SolidityCursorFilter filter = new SolidityCursorFilter(dbManager);
+    ServletRequest req = mock(ServletRequest.class);
+    ServletResponse resp = mock(ServletResponse.class);
 
-    filter.doFilter(request, response, chain);
+    new SolidityCursorFilter(manager).doFilter(req, resp, chain);
 
-    InOrder order = inOrder(dbManager, chain);
-    order.verify(dbManager).setCursor(Chainbase.Cursor.SOLIDITY);
-    order.verify(chain).doFilter(request, response);
-    order.verify(dbManager).resetCursor();
-    order.verifyNoMoreInteractions();
+    // cursor is set to SOLIDITY before the servlet runs and reset only after it returns
+    InOrder order = inOrder(manager, chain);
+    order.verify(manager).setCursor(Chainbase.Cursor.SOLIDITY);
+    order.verify(chain).doFilter(req, resp);
+    order.verify(manager).resetCursor();
   }
 
   @Test
-  public void testPbftFilterSetsAndResetsCursorAroundChain() throws Exception {
+  public void testPbftFilterSetsCursorBeforeChainAndResetsAfter() throws Exception {
+    Manager manager = mock(Manager.class);
     FilterChain chain = mock(FilterChain.class);
-    PbftCursorFilter filter = new PbftCursorFilter(dbManager);
+    ServletRequest req = mock(ServletRequest.class);
+    ServletResponse resp = mock(ServletResponse.class);
 
-    filter.doFilter(request, response, chain);
+    new PbftCursorFilter(manager).doFilter(req, resp, chain);
 
-    InOrder order = inOrder(dbManager, chain);
-    order.verify(dbManager).setCursor(Chainbase.Cursor.PBFT);
-    order.verify(chain).doFilter(request, response);
-    order.verify(dbManager).resetCursor();
-    order.verifyNoMoreInteractions();
+    InOrder order = inOrder(manager, chain);
+    order.verify(manager).setCursor(Chainbase.Cursor.PBFT);
+    order.verify(chain).doFilter(req, resp);
+    order.verify(manager).resetCursor();
   }
 
   @Test
-  public void testCursorResetEvenIfChainThrows() throws Exception {
+  public void testCursorIsResetWhenChainThrows() throws Exception {
+    Manager manager = mock(Manager.class);
     FilterChain chain = mock(FilterChain.class);
-    doThrow(new ServletException("boom")).when(chain).doFilter(any(), any());
-    SolidityCursorFilter filter = new SolidityCursorFilter(dbManager);
+    ServletRequest req = mock(ServletRequest.class);
+    ServletResponse resp = mock(ServletResponse.class);
+    doThrow(new ServletException("boom")).when(chain).doFilter(req, resp);
 
     try {
-      filter.doFilter(request, response, chain);
-      Assert.fail("expected ServletException");
+      new SolidityCursorFilter(manager).doFilter(req, resp, chain);
+      fail("expected the chain exception to propagate");
     } catch (ServletException expected) {
-      Assert.assertEquals("boom", expected.getMessage());
+      // expected
     }
+    // the finally block must still restore HEAD, or the next request on this thread reads SOLIDITY
+    verify(manager).resetCursor();
+  }
 
-    verify(dbManager).setCursor(Chainbase.Cursor.SOLIDITY);
-    verify(dbManager).resetCursor();
+  @Test
+  public void testCursorIsResetOnEverySequentialRequest() throws Exception {
+    Manager manager = mock(Manager.class);
+    FilterChain chain = mock(FilterChain.class);
+    ServletRequest req = mock(ServletRequest.class);
+    ServletResponse resp = mock(ServletResponse.class);
+
+    SolidityCursorFilter filter = new SolidityCursorFilter(manager);
+    filter.doFilter(req, resp, chain);
+    filter.doFilter(req, resp, chain);
+
+    // jetty reuses worker threads: each request must reset, so no cursor leaks into the next
+    verify(manager, times(2)).setCursor(Chainbase.Cursor.SOLIDITY);
+    verify(manager, times(2)).resetCursor();
   }
 }

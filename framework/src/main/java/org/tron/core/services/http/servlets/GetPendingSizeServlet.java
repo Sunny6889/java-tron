@@ -7,11 +7,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tron.core.db.Manager;
-import org.tron.core.services.http.JsonFormat;
-import org.tron.core.services.http.Util;
+import org.tron.core.services.http.HttpApi;
+import org.tron.core.services.http.HttpApi.Access;
+import org.tron.core.services.http.HttpApi.Surface;
 
 @Component
 @Slf4j(topic = "API")
+@HttpApi(value = "getpendingsize", access = Access.READ,
+    surfaces = {Surface.FULL})
 public class GetPendingSizeServlet extends RateLimiterServlet {
 
   @Autowired

@@ -16,14 +16,17 @@ import org.tron.common.utils.ByteArray;
 import org.tron.core.Wallet;
 import org.tron.core.capsule.TransactionCapsule;
 import org.tron.core.exception.ContractValidateException;
-import org.tron.core.services.http.JsonFormat;
-import org.tron.core.services.http.Util;
+import org.tron.core.services.http.HttpApi;
+import org.tron.core.services.http.HttpApi.Access;
+import org.tron.core.services.http.HttpApi.Surface;
 import org.tron.json.JSONObject;
 import org.tron.protos.Protocol;
 import org.tron.protos.contract.SmartContractOuterClass.TriggerSmartContract;
 
 @Component
 @Slf4j(topic = "API")
+@HttpApi(value = "estimateenergy", access = Access.READ,
+    surfaces = {Surface.FULL, Surface.SOLIDITY, Surface.PBFT, Surface.SOLIDITY_NODE})
 public class EstimateEnergyServlet extends RateLimiterServlet {
 
   @Autowired

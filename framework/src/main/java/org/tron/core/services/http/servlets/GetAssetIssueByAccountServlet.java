@@ -9,13 +9,15 @@ import org.springframework.stereotype.Component;
 import org.tron.api.GrpcAPI.AssetIssueList;
 import org.tron.common.utils.ByteArray;
 import org.tron.core.Wallet;
-import org.tron.core.services.http.JsonFormat;
-import org.tron.core.services.http.PostParams;
-import org.tron.core.services.http.Util;
+import org.tron.core.services.http.HttpApi;
+import org.tron.core.services.http.HttpApi.Access;
+import org.tron.core.services.http.HttpApi.Surface;
 import org.tron.protos.Protocol.Account;
 
 @Component
 @Slf4j(topic = "API")
+@HttpApi(value = "getassetissuebyaccount", access = Access.READ,
+    surfaces = {Surface.FULL})
 public class GetAssetIssueByAccountServlet extends RateLimiterServlet {
 
   @Autowired

@@ -9,14 +9,16 @@ import org.tron.api.GrpcAPI;
 import org.tron.api.GrpcAPI.IvkDecryptAndMarkParameters;
 import org.tron.common.utils.ByteArray;
 import org.tron.core.Wallet;
-import org.tron.core.services.http.JsonFormat;
-import org.tron.core.services.http.PostParams;
-import org.tron.core.services.http.Util;
+import org.tron.core.services.http.HttpApi;
+import org.tron.core.services.http.HttpApi.Access;
+import org.tron.core.services.http.HttpApi.Surface;
 import org.tron.json.JSONArray;
 import org.tron.json.JSONObject;
 
 @Component
 @Slf4j(topic = "API")
+@HttpApi(value = "scanandmarknotebyivk", access = Access.READ,
+    surfaces = {Surface.PBFT})
 public class ScanAndMarkNoteByIvkServlet extends RateLimiterServlet {
 
   @Autowired

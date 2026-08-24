@@ -9,14 +9,16 @@ import org.tron.api.GrpcAPI;
 import org.tron.common.utils.ByteArray;
 import org.tron.core.Wallet;
 import org.tron.core.capsule.TransactionCapsule;
-import org.tron.core.services.http.JsonFormat;
-import org.tron.core.services.http.PostParams;
-import org.tron.core.services.http.Util;
+import org.tron.core.services.http.HttpApi;
+import org.tron.core.services.http.HttpApi.Access;
+import org.tron.core.services.http.HttpApi.Surface;
 import org.tron.json.JSONObject;
 import org.tron.protos.Protocol.Transaction;
 
 @Component
 @Slf4j(topic = "API")
+@HttpApi(value = "broadcasttransaction", access = Access.WRITE,
+    surfaces = {Surface.FULL})
 public class BroadcastServlet extends RateLimiterServlet {
 
   @Autowired

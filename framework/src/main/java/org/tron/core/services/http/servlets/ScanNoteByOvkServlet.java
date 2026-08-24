@@ -10,12 +10,14 @@ import org.tron.api.GrpcAPI;
 import org.tron.api.GrpcAPI.OvkDecryptParameters;
 import org.tron.common.utils.ByteArray;
 import org.tron.core.Wallet;
-import org.tron.core.services.http.JsonFormat;
-import org.tron.core.services.http.PostParams;
-import org.tron.core.services.http.Util;
+import org.tron.core.services.http.HttpApi;
+import org.tron.core.services.http.HttpApi.Access;
+import org.tron.core.services.http.HttpApi.Surface;
 
 @Component
 @Slf4j(topic = "API")
+@HttpApi(value = "scannotebyovk", access = Access.READ,
+    surfaces = {Surface.PBFT})
 public class ScanNoteByOvkServlet extends RateLimiterServlet {
 
   @Autowired

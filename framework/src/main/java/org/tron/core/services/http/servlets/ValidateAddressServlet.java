@@ -10,12 +10,16 @@ import org.springframework.stereotype.Component;
 import org.tron.common.utils.ByteArray;
 import org.tron.common.utils.Commons;
 import org.tron.common.utils.DecodeUtil;
-import org.tron.core.services.http.Util;
+import org.tron.core.services.http.HttpApi;
+import org.tron.core.services.http.HttpApi.Access;
+import org.tron.core.services.http.HttpApi.Surface;
 import org.tron.json.JSON;
 import org.tron.json.JSONObject;
 
 @Component
 @Slf4j(topic = "API")
+@HttpApi(value = "validateaddress", access = Access.READ,
+    surfaces = {Surface.FULL})
 public class ValidateAddressServlet extends RateLimiterServlet {
 
   private String validAddress(String input) {

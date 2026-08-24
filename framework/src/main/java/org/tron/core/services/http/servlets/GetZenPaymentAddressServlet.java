@@ -9,14 +9,17 @@ import org.springframework.stereotype.Component;
 import org.tron.api.GrpcAPI;
 import org.tron.common.utils.ByteArray;
 import org.tron.core.Wallet;
-import org.tron.core.services.http.JsonFormat;
-import org.tron.core.services.http.Util;
+import org.tron.core.services.http.HttpApi;
+import org.tron.core.services.http.HttpApi.Access;
+import org.tron.core.services.http.HttpApi.Surface;
 import org.tron.core.zen.address.DiversifierT;
 import org.tron.core.zen.address.IncomingViewingKey;
 import org.tron.json.JSONObject;
 
 @Component
 @Slf4j(topic = "API")
+@HttpApi(value = "getzenpaymentaddress", access = Access.READ,
+    surfaces = {Surface.FULL})
 public class GetZenPaymentAddressServlet extends RateLimiterServlet {
 
   @Autowired

@@ -8,12 +8,14 @@ import org.springframework.stereotype.Component;
 import org.tron.api.GrpcAPI.BytesMessage;
 import org.tron.api.GrpcAPI.SpendAuthSigParameters;
 import org.tron.core.Wallet;
-import org.tron.core.services.http.JsonFormat;
-import org.tron.core.services.http.PostParams;
-import org.tron.core.services.http.Util;
+import org.tron.core.services.http.HttpApi;
+import org.tron.core.services.http.HttpApi.Access;
+import org.tron.core.services.http.HttpApi.Surface;
 
 @Component
 @Slf4j(topic = "API")
+@HttpApi(value = "createspendauthsig", access = Access.READ,
+    surfaces = {Surface.FULL})
 public class CreateSpendAuthSigServlet extends RateLimiterServlet {
 
   @Autowired

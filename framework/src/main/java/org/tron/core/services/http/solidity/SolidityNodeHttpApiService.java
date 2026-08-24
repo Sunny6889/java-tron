@@ -1,4 +1,4 @@
-package org.tron.core.services.http;
+package org.tron.core.services.http.solidity;
 
 import java.util.EnumSet;
 import javax.servlet.DispatcherType;
@@ -12,6 +12,8 @@ import org.springframework.stereotype.Component;
 import org.tron.common.application.HttpService;
 import org.tron.core.config.args.Args;
 import org.tron.core.services.filter.HttpApiAccessFilter;
+import org.tron.core.services.http.HttpApi;
+import org.tron.core.services.http.HttpApiRegistry;
 import org.tron.core.services.http.servlets.GetNodeInfoServlet;
 
 @Component
@@ -42,7 +44,7 @@ public class SolidityNodeHttpApiService extends HttpService {
    * application context; getnodeinfo is additionally reachable under the fullnode prefix.
    */
   protected void addServletsFromRegistry(ServletContextHandler context) {
-    for (HttpApiDef def : HttpApiDef.forSurface(HttpApiDef.Surface.SOLIDITY_NODE)) {
+    for (HttpApiRegistry.Entry def : HttpApiRegistry.forSurface(HttpApi.Surface.SOLIDITY_NODE)) {
       context.addServlet(new ServletHolder(appContext.getBean(def.getServlet())),
           "/walletsolidity/" + def.getSuffix());
     }

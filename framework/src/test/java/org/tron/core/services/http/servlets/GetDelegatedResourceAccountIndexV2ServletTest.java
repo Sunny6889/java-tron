@@ -11,7 +11,6 @@ import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.tron.common.utils.ByteArray;
-import org.tron.core.services.http.Util;
 import org.tron.protos.Protocol.DelegatedResourceAccountIndex;
 
 public class GetDelegatedResourceAccountIndexV2ServletTest extends BaseHttpTest {

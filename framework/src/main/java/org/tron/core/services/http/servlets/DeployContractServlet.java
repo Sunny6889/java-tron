@@ -1,7 +1,7 @@
 package org.tron.core.services.http.servlets;
 
-import static org.tron.core.services.http.Util.getHexAddress;
-import static org.tron.core.services.http.Util.setTransactionPermissionId;
+import static org.tron.core.services.http.servlets.Util.getHexAddress;
+import static org.tron.core.services.http.servlets.Util.setTransactionPermissionId;
 
 import com.google.common.base.Strings;
 import com.google.protobuf.ByteString;
@@ -13,9 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tron.common.utils.ByteArray;
 import org.tron.core.Wallet;
-import org.tron.core.services.http.JsonFormat;
-import org.tron.core.services.http.PostParams;
-import org.tron.core.services.http.Util;
+import org.tron.core.services.http.HttpApi;
+import org.tron.core.services.http.HttpApi.Access;
+import org.tron.core.services.http.HttpApi.Surface;
 import org.tron.json.JSONObject;
 import org.tron.protos.Protocol.Transaction;
 import org.tron.protos.Protocol.Transaction.Contract.ContractType;
@@ -25,6 +25,8 @@ import org.tron.protos.contract.SmartContractOuterClass.SmartContract.ABI;
 
 @Component
 @Slf4j(topic = "API")
+@HttpApi(value = "deploycontract", access = Access.BUILD,
+    surfaces = {Surface.FULL})
 public class DeployContractServlet extends RateLimiterServlet {
 
   @Autowired

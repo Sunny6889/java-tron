@@ -7,11 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tron.core.metrics.MetricsApiService;
 import org.tron.core.metrics.MetricsInfo;
-import org.tron.core.services.http.Util;
+import org.tron.core.services.http.HttpApiExcluded;
 import org.tron.json.JSON;
 
 @Component
 @Slf4j(topic = "API")
+@HttpApiExcluded("root-mounted at /monitor/getstatsinfo, not a /wallet endpoint")
 public class MetricsServlet extends RateLimiterServlet {
 
   @Autowired

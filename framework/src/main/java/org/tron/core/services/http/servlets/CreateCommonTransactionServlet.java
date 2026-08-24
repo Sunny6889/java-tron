@@ -12,15 +12,17 @@ import org.springframework.stereotype.Component;
 import org.tron.core.Wallet;
 import org.tron.core.actuator.TransactionFactory;
 import org.tron.core.exception.ContractValidateException;
-import org.tron.core.services.http.JsonFormat;
-import org.tron.core.services.http.PostParams;
-import org.tron.core.services.http.Util;
+import org.tron.core.services.http.HttpApi;
+import org.tron.core.services.http.HttpApi.Access;
+import org.tron.core.services.http.HttpApi.Surface;
 import org.tron.json.JSONObject;
 import org.tron.protos.Protocol.Transaction;
 import org.tron.protos.Protocol.Transaction.Contract.ContractType;
 
 @Component
 @Slf4j(topic = "API")
+@HttpApi(value = "createCommonTransaction", access = Access.BUILD,
+    surfaces = {Surface.FULL})
 public class CreateCommonTransactionServlet extends RateLimiterServlet {
 
   @Autowired

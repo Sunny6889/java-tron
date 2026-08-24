@@ -8,12 +8,11 @@ import org.springframework.stereotype.Component;
 import org.tron.api.GrpcAPI.BytesMessage;
 import org.tron.api.GrpcAPI.NfParameters;
 import org.tron.core.Wallet;
-import org.tron.core.services.http.JsonFormat;
-import org.tron.core.services.http.PostParams;
-import org.tron.core.services.http.Util;
+import org.tron.core.services.http.HttpApiExcluded;
 
 @Component
 @Slf4j(topic = "API")
+@HttpApiExcluded("shielded note API disabled on every surface (commented out upstream)")
 public class CreateShieldNullifierServlet extends RateLimiterServlet {
 
   @Autowired

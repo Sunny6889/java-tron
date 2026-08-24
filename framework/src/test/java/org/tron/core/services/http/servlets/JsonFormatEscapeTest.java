@@ -1,4 +1,4 @@
-package org.tron.core.services.http;
+package org.tron.core.services.http.servlets;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -16,6 +16,7 @@ import java.nio.charset.StandardCharsets;
 import org.junit.Test;
 import org.tron.common.utils.ByteArray;
 import org.tron.core.capsule.TransactionCapsule;
+import org.tron.core.services.http.HttpSelfFormatFieldName;
 import org.tron.protos.Protocol.Transaction;
 import org.tron.protos.Protocol.Transaction.Contract.ContractType;
 import org.tron.protos.contract.AssetIssueContractOuterClass.AssetIssueContract;

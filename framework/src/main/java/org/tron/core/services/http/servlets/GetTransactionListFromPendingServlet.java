@@ -8,11 +8,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tron.api.GrpcAPI.TransactionIdList;
 import org.tron.core.db.Manager;
-import org.tron.core.services.http.PostParams;
-import org.tron.core.services.http.Util;
+import org.tron.core.services.http.HttpApi;
+import org.tron.core.services.http.HttpApi.Access;
+import org.tron.core.services.http.HttpApi.Surface;
 
 @Component
 @Slf4j(topic = "API")
+@HttpApi(value = "gettransactionlistfrompending", access = Access.READ,
+    surfaces = {Surface.FULL})
 public class GetTransactionListFromPendingServlet extends RateLimiterServlet {
 
   @Autowired

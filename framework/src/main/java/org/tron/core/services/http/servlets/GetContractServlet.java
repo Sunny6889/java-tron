@@ -1,6 +1,6 @@
 package org.tron.core.services.http.servlets;
 
-import static org.tron.core.services.http.PostParams.S_VALUE;
+import static org.tron.core.services.http.servlets.PostParams.S_VALUE;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -9,14 +9,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tron.api.GrpcAPI.BytesMessage;
 import org.tron.core.Wallet;
-import org.tron.core.services.http.JsonFormat;
-import org.tron.core.services.http.PostParams;
-import org.tron.core.services.http.Util;
+import org.tron.core.services.http.HttpApi;
+import org.tron.core.services.http.HttpApi.Access;
+import org.tron.core.services.http.HttpApi.Surface;
 import org.tron.json.JSONObject;
 import org.tron.protos.contract.SmartContractOuterClass.SmartContract;
 
 @Component
 @Slf4j(topic = "API")
+@HttpApi(value = "getcontract", access = Access.READ,
+    surfaces = {Surface.FULL})
 public class GetContractServlet extends RateLimiterServlet {
 
   @Autowired

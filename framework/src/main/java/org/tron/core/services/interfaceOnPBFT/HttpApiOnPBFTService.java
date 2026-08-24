@@ -13,7 +13,8 @@ import org.tron.core.config.args.Args;
 import org.tron.core.services.filter.HttpApiAccessFilter;
 import org.tron.core.services.filter.LiteFnQueryHttpFilter;
 import org.tron.core.services.filter.PbftCursorFilter;
-import org.tron.core.services.http.HttpApiDef;
+import org.tron.core.services.http.HttpApi;
+import org.tron.core.services.http.HttpApiRegistry;
 
 @Slf4j(topic = "API")
 public class HttpApiOnPBFTService extends HttpService {
@@ -44,7 +45,7 @@ public class HttpApiOnPBFTService extends HttpService {
    * surface, resolving servlet beans from the application context.
    */
   protected void addServletsFromRegistry(ServletContextHandler context) {
-    for (HttpApiDef def : HttpApiDef.forSurface(HttpApiDef.Surface.PBFT)) {
+    for (HttpApiRegistry.Entry def : HttpApiRegistry.forSurface(HttpApi.Surface.PBFT)) {
       context.addServlet(new ServletHolder(appContext.getBean(def.getServlet())),
           "/" + def.getSuffix());
     }

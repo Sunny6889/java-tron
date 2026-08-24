@@ -1,4 +1,4 @@
-package org.tron.core.services.http;
+package org.tron.core.services.http.servlets;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -8,13 +8,11 @@ import static org.junit.Assert.assertTrue;
 
 import com.google.protobuf.ByteString;
 import com.google.protobuf.UnknownFieldSet;
-
 import java.io.CharArrayReader;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-
 import org.junit.After;
 import org.junit.Test;
 import org.mockito.Mockito;

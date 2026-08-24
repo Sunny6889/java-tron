@@ -34,7 +34,7 @@ import org.tron.core.ChainBaseManager;
 import org.tron.core.config.args.Args;
 import org.tron.core.net.TronNetDelegate;
 import org.tron.core.services.RpcApiService;
-import org.tron.core.services.http.SolidityNodeHttpApiService;
+import org.tron.core.services.http.solidity.SolidityNodeHttpApiService;
 import org.tron.core.store.DynamicPropertiesStore;
 import org.tron.protos.Protocol;
 import org.tron.protos.Protocol.Block;
