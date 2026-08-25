@@ -16,13 +16,12 @@ import java.lang.annotation.Target;
  *
  * <p><b>Deliberately not {@code @Inherited}, and read only via
  * {@link Class#getDeclaredAnnotation}.</b> Servlets in this code base have historically been
- * subclassed to vary behaviour — the cursor wrappers this refactor removes were 96 classes of the
- * form {@code GetAccountOnSolidityServlet extends GetAccountServlet}. If the annotation were
- * inheritable, or were looked up with a superclass-walking helper such as Spring's
- * {@code AnnotatedElementUtils#findMergedAnnotation}, any future subclass would silently inherit
- * its parent's suffix, access and surfaces: a {@code WRITE} endpoint could reach a cursor surface
- * without anyone declaring it. {@link HttpApiRegistry} asserts both properties at startup so the
- * guarantee cannot be removed by accident.
+ * subclassed to vary behaviour. If the annotation were inheritable, or were looked up with a
+ * superclass-walking helper such as Spring's {@code AnnotatedElementUtils#findMergedAnnotation},
+ * any future subclass would silently inherit its parent's suffix, access and surfaces: a
+ * {@code WRITE} endpoint could reach a cursor surface without anyone declaring it.
+ * {@link HttpApiRegistry} asserts both properties at startup so the guarantee cannot be removed
+ * by accident.
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
@@ -38,14 +37,19 @@ public @interface HttpApi {
   /** Http services the endpoint is exposed on; must not be empty. */
   Surface[] surfaces();
 
-  /** Http services an endpoint can be exposed on. */
+  /**
+   * Http services an endpoint can be exposed on. FULL / SOLIDITY / PBFT are the three
+   * services run by the FullNode process (its HEAD, solidified and PBFT-finalized views);
+   * SOLIDITY_NODE is run only when a node starts as a standalone SolidityNode process.
+   */
   enum Surface {
     FULL, SOLIDITY, PBFT, SOLIDITY_NODE
   }
 
   /**
    * READ: no state mutation — queries, crypto derivation and constant VM calls.
-   * BUILD: composes an unsigned transaction for the client to sign.
+   * BUILD: no state mutation — composes an unsigned transaction, or the parameters for one,
+   *   for the client to sign and broadcast.
    * WRITE: pushes a transaction into the chain.
    */
   enum Access {
