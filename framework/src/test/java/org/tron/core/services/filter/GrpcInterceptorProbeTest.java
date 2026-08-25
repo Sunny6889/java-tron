@@ -1,5 +1,10 @@
 package org.tron.core.services.filter;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+
 import io.grpc.ForwardingServerCallListener.SimpleForwardingServerCallListener;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
@@ -10,6 +15,7 @@ import io.grpc.ServerCall;
 import io.grpc.ServerCallHandler;
 import io.grpc.ServerInterceptor;
 import io.grpc.stub.StreamObserver;
+import java.lang.reflect.Field;
 import java.net.ServerSocket;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -23,6 +29,8 @@ import org.junit.Test;
 import org.tron.api.DatabaseGrpc;
 import org.tron.api.DatabaseGrpc.DatabaseImplBase;
 import org.tron.api.GrpcAPI.EmptyMessage;
+import org.tron.core.db.Manager;
+import org.tron.core.db2.core.Chainbase;
 import org.tron.protos.Protocol.Block;
 
 /**
@@ -143,10 +151,9 @@ public class GrpcInterceptorProbeTest {
     Assert.assertTrue("no onHalfClose captured for A", aIn >= 0);
     Assert.assertTrue("no onHalfClose captured for B", bIn >= 0);
 
-    boolean lastRegisteredIsInnermost = bIn > aIn;
     System.out.println("\n===== ordering =====");
     System.out.println("registered: intercept(A) then intercept(B)");
-    System.out.println(lastRegisteredIsInnermost
+    System.out.println(bIn > aIn
         ? "B (registered last) is innermost -> register the cursor interceptor LAST"
         : "A (registered first) is innermost -> register the cursor interceptor FIRST");
     System.out.println("====================\n");
@@ -154,6 +161,15 @@ public class GrpcInterceptorProbeTest {
     int handlerIdx = indexOf("[HANDLER]", "execute");
     Assert.assertTrue("handler did not run inside both interceptors",
         handlerIdx > aIn && handlerIdx > bIn);
+
+    // The innermost interceptor enters onHalfClose last. RpcApiServiceOnSolidity /
+    // RpcApiServiceOnPBFT register their cursor interceptor BEFORE super.addInterceptor(...)
+    // precisely because the first-registered one ends up innermost, wrapping the handler alone.
+    // Asserted, not merely printed: if a gRPC upgrade flips this, those two services silently
+    // start bracketing the other interceptors instead of the handler.
+    Assert.assertTrue(
+        "first-registered interceptor must be innermost; the cursor services depend on it",
+        aIn > bIn);
   }
 
   /**
@@ -232,6 +248,103 @@ public class GrpcInterceptorProbeTest {
       Assert.assertEquals(
           "a ThreadLocal set in onHalfClose must be visible to the handler",
           "SET_BY_INTERCEPTOR", seenByHandler[0]);
+    } finally {
+      ch.shutdownNow();
+      s.shutdownNow();
+      s.awaitTermination(5, TimeUnit.SECONDS);
+    }
+  }
+
+  /**
+   * The production interceptor itself, not a stand-in: the cursor must be set on the thread that
+   * runs the handler and must be restored before the call ends, even when the handler throws.
+   */
+  @Test
+  public void testProductionInterceptorSetsCursorOnTheHandlerThread() throws Exception {
+    final List<String> setOn = new CopyOnWriteArrayList<>();
+    final List<String> resetOn = new CopyOnWriteArrayList<>();
+    final String[] handlerOn = new String[1];
+
+    Manager manager = mock(Manager.class);
+    doAnswer(inv -> setOn.add(Thread.currentThread().getName()))
+        .when(manager).setCursor(any(Chainbase.Cursor.class));
+    doAnswer(inv -> resetOn.add(Thread.currentThread().getName()))
+        .when(manager).resetCursor();
+
+    SolidityCursorInterceptor interceptor = new SolidityCursorInterceptor();
+    Field dbManager = CursorServerInterceptor.class.getDeclaredField("dbManager");
+    dbManager.setAccessible(true);
+    dbManager.set(interceptor, manager);
+
+    int port = freePort();
+    Server s = ServerBuilder.forPort(port)
+        .executor(executor)
+        .addService(new DatabaseImplBase() {
+          @Override
+          public void getNowBlock(EmptyMessage req, StreamObserver<Block> obs) {
+            handlerOn[0] = Thread.currentThread().getName();
+            obs.onNext(Block.getDefaultInstance());
+            obs.onCompleted();
+          }
+        })
+        .intercept(interceptor)
+        .build()
+        .start();
+
+    ManagedChannel ch = ManagedChannelBuilder.forAddress("127.0.0.1", port)
+        .usePlaintext().directExecutor().build();
+    try {
+      DatabaseGrpc.newBlockingStub(ch).getNowBlock(EmptyMessage.getDefaultInstance());
+
+      Assert.assertEquals("cursor must be set exactly once per call", 1, setOn.size());
+      Assert.assertEquals("cursor must be restored exactly once per call", 1, resetOn.size());
+      Assert.assertNotNull("handler did not run", handlerOn[0]);
+      // the ThreadLocal cursor only reaches the read path if it is set on the handler's thread
+      Assert.assertEquals("cursor was set on a thread other than the handler's",
+          handlerOn[0], setOn.get(0));
+      Assert.assertEquals("cursor was restored on a thread other than the handler's",
+          handlerOn[0], resetOn.get(0));
+      verify(manager).setCursor(Chainbase.Cursor.SOLIDITY);
+    } finally {
+      ch.shutdownNow();
+      s.shutdownNow();
+      s.awaitTermination(5, TimeUnit.SECONDS);
+    }
+  }
+
+  /** A handler that throws must still leave the cursor restored, or it leaks into the next call. */
+  @Test
+  public void testProductionInterceptorRestoresCursorWhenHandlerThrows() throws Exception {
+    Manager manager = mock(Manager.class);
+    SolidityCursorInterceptor interceptor = new SolidityCursorInterceptor();
+    Field dbManager = CursorServerInterceptor.class.getDeclaredField("dbManager");
+    dbManager.setAccessible(true);
+    dbManager.set(interceptor, manager);
+
+    int port = freePort();
+    Server s = ServerBuilder.forPort(port)
+        .executor(executor)
+        .addService(new DatabaseImplBase() {
+          @Override
+          public void getNowBlock(EmptyMessage req, StreamObserver<Block> obs) {
+            throw new IllegalStateException("boom");
+          }
+        })
+        .intercept(interceptor)
+        .build()
+        .start();
+
+    ManagedChannel ch = ManagedChannelBuilder.forAddress("127.0.0.1", port)
+        .usePlaintext().directExecutor().build();
+    try {
+      try {
+        DatabaseGrpc.newBlockingStub(ch).getNowBlock(EmptyMessage.getDefaultInstance());
+        Assert.fail("expected the handler failure to surface");
+      } catch (RuntimeException expected) {
+        // the call fails; what matters is the cursor below
+      }
+      verify(manager).setCursor(Chainbase.Cursor.SOLIDITY);
+      verify(manager).resetCursor();
     } finally {
       ch.shutdownNow();
       s.shutdownNow();
