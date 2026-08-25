@@ -47,10 +47,21 @@ public class HttpApiRegistryTest {
    */
   private static final Map<Surface, Set<String>> INTENTIONAL_ADDED = new EnumMap<>(Surface.class);
 
+  /**
+   * Endpoints intentionally removed from a surface since the pre-refactor baseline. These five
+   * sapling shielded note-scan endpoints were live on develop's pbft port only — an oversight,
+   * since the same endpoints were disabled on every other surface years earlier — and were dropped
+   * from pbft (see the "drop shielded trx endpoints missed on the pbft port" change).
+   */
+  private static final Map<Surface, Set<String>> INTENTIONAL_REMOVED = new EnumMap<>(Surface.class);
+
   static {
     // 849c29e73a feat(http): expose two solidity read endpoints on pbft surface
     INTENTIONAL_ADDED.put(Surface.PBFT, new HashSet<>(
         Arrays.asList("getpaginatednowwitnesslist", "gettransactioninfobyblocknum")));
+    INTENTIONAL_REMOVED.put(Surface.PBFT, new HashSet<>(Arrays.asList(
+        "getmerkletreevoucherinfo", "scannotebyivk", "scanandmarknotebyivk",
+        "scannotebyovk", "isspend")));
   }
 
   @Test
@@ -101,6 +112,7 @@ public class HttpApiRegistryTest {
       Set<String> expected =
           new TreeSet<>(baseline.getOrDefault(surface, Collections.emptySet()));
       expected.addAll(INTENTIONAL_ADDED.getOrDefault(surface, Collections.emptySet()));
+      expected.removeAll(INTENTIONAL_REMOVED.getOrDefault(surface, Collections.emptySet()));
       Set<String> actual = new TreeSet<>();
       for (HttpApiRegistry.Entry entry : HttpApiRegistry.forSurface(surface)) {
         actual.add(entry.getSuffix());

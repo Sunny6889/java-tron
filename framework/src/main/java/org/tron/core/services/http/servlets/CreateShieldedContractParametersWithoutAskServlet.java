@@ -15,7 +15,7 @@ import org.tron.core.services.http.HttpApi.Surface;
 
 @Component
 @Slf4j(topic = "API")
-@HttpApi(value = "createshieldedcontractparameterswithoutask", access = Access.BUILD,
+@HttpApi(value = "createshieldedcontractparameterswithoutask", access = Access.READ,
     surfaces = {Surface.FULL})
 public class CreateShieldedContractParametersWithoutAskServlet extends RateLimiterServlet {
 

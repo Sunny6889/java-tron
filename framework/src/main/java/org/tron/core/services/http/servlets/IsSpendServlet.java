@@ -9,14 +9,11 @@ import org.springframework.stereotype.Component;
 import org.tron.api.GrpcAPI.NoteParameters;
 import org.tron.api.GrpcAPI.SpendResult;
 import org.tron.core.Wallet;
-import org.tron.core.services.http.HttpApi;
-import org.tron.core.services.http.HttpApi.Access;
-import org.tron.core.services.http.HttpApi.Surface;
+import org.tron.core.services.http.HttpApiExcluded;
 
 @Component
 @Slf4j(topic = "API")
-@HttpApi(value = "isspend", access = Access.READ,
-    surfaces = {Surface.PBFT})
+@HttpApiExcluded("sapling shielded note-scan API, disabled on every surface")
 public class IsSpendServlet extends RateLimiterServlet {
 
   @Autowired
