@@ -12,7 +12,7 @@ import org.tron.json.JSON;
 
 @Component
 @Slf4j(topic = "API")
-@HttpApiExcluded("root-mounted at /monitor/getstatsinfo, not a /wallet endpoint")
+@HttpApiExcluded("root-mounted at /monitor/getstatsinfo, not a wallet endpoint")
 public class MetricsServlet extends RateLimiterServlet {
 
   @Autowired
