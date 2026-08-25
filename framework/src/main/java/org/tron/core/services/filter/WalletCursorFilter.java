@@ -42,7 +42,6 @@ public abstract class WalletCursorFilter implements Filter {
   public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse,
                        FilterChain filterChain) throws IOException, ServletException {
     try {
-      // for PBFT the offset (head - pbft) is computed inside Manager#setCursor per request
       dbManager.setCursor(cursor);
       filterChain.doFilter(servletRequest, servletResponse);
     } finally {
