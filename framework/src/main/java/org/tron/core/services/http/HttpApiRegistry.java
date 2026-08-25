@@ -1,6 +1,7 @@
 package org.tron.core.services.http;
 
 import java.lang.annotation.Inherited;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -9,11 +10,15 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.regex.Pattern;
 import javax.servlet.http.HttpServlet;
+import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
+import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.type.filter.AssignableTypeFilter;
 import org.springframework.stereotype.Component;
+import org.tron.core.exception.TronError;
 import org.tron.core.services.http.HttpApi.Access;
 import org.tron.core.services.http.HttpApi.Surface;
 
@@ -25,14 +30,18 @@ import org.tron.core.services.http.HttpApi.Surface;
  *
  * <p>The whole table is built and validated when this class is first touched — which happens
  * while a service mounts its servlets, before any Jetty bind, and covers every surface whether
- * or not that surface is enabled on the node. A table that breaks an invariant throws here and
- * the node does not boot. Invariants:
+ * or not that surface is enabled on the node. A table that breaks an invariant aborts the boot
+ * with {@link TronError.ErrCode#API_SERVER_INIT}. Invariants:
  *
  * <ul>
- *   <li>every concrete servlet under {@value #PACKAGE} declares exactly one of {@link HttpApi} or
- *       {@link HttpApiExcluded} — a servlet cannot be added and silently left unmounted;</li>
+ *   <li>every concrete top-level servlet under {@value #PACKAGE} declares exactly one of
+ *       {@link HttpApi} or {@link HttpApiExcluded} — a servlet cannot be added and silently left
+ *       unmounted;</li>
+ *   <li>conversely a servlet that could never be mounted (abstract, or nested inside another
+ *       class) must declare neither — otherwise its endpoint would be silently dropped;</li>
  *   <li>each {@code (surface, suffix)} pair is unique;</li>
- *   <li>suffixes are non-blank and contain no {@code '/'};</li>
+ *   <li>suffixes are a single path token — {@value #SUFFIX_SYNTAX} — so a suffix can never turn
+ *       into a Jetty wildcard or otherwise malformed path spec;</li>
  *   <li>every {@link HttpApi} servlet is a Spring {@link Component} bean;</li>
  *   <li>every endpoint whose access is not {@link Access#READ} is exposed on the FULL surface
  *       only — a cursor surface (SOLIDITY / PBFT) must never run a write path on a
@@ -47,6 +56,17 @@ import org.tron.core.services.http.HttpApi.Surface;
 public final class HttpApiRegistry {
 
   static final String PACKAGE = "org.tron.core.services.http.servlets";
+
+  /** Human-readable form of {@link #SUFFIX_PATTERN}, quoted in the boot failure message. */
+  static final String SUFFIX_SYNTAX = "[A-Za-z0-9_.-]+";
+
+  /**
+   * A suffix is concatenated into a jetty path spec ("/wallet/" + suffix), so it must be a single
+   * path token. Anything outside this set could change how jetty matches the mapping — {@code *}
+   * in particular turns the mount into a prefix wildcard that swallows every sibling endpoint —
+   * or produce a path that cannot be requested at all.
+   */
+  private static final Pattern SUFFIX_PATTERN = Pattern.compile(SUFFIX_SYNTAX);
 
   private static final List<Entry> ENTRIES = init();
 
@@ -103,30 +123,59 @@ public final class HttpApiRegistry {
   }
 
   private static List<Entry> init() {
-    List<Entry> entries = buildFromPackage(PACKAGE);
-    if (entries.isEmpty()) {
-      // a broken classpath scan (packaging / classloader) would otherwise leave the node with no
-      // http api and no error; fail the boot loudly instead
-      throw new IllegalStateException("no http endpoints discovered in " + PACKAGE);
+    try {
+      List<Entry> entries = buildFromPackage(PACKAGE);
+      if (entries.isEmpty()) {
+        // a broken classpath scan (packaging / classloader) would otherwise leave the node with
+        // no http api and no error; fail the boot loudly instead
+        throw new IllegalStateException("no http endpoints discovered in " + PACKAGE);
+      }
+      return entries;
+    } catch (IllegalStateException e) {
+      // the http api surface is not serviceable: take the node down through the standard exit
+      // path (logged, System.exit) instead of letting a bare error escape a static initializer
+      throw new TronError(e, TronError.ErrCode.API_SERVER_INIT);
     }
-    return entries;
   }
 
-  /** Concrete, top-level {@link HttpServlet} classes declared in {@code pkg}. */
+  /**
+   * Concrete, top-level {@link HttpServlet} classes declared in {@code pkg} — the classes that can
+   * actually be mounted as an endpoint.
+   */
   static List<Class<?>> scanConcreteServlets(String pkg) {
+    List<Class<?>> mountable = new ArrayList<>();
+    for (Class<?> clazz : scanAllServlets(pkg)) {
+      if (isMountable(clazz)) {
+        mountable.add(clazz);
+      }
+    }
+    return mountable;
+  }
+
+  /**
+   * Every {@link HttpServlet} class in {@code pkg}, including the abstract and nested ones that
+   * cannot be mounted. Those are still scanned so {@link #buildFromPackage} can reject one that
+   * declares an endpoint, rather than dropping it silently.
+   */
+  private static List<Class<?>> scanAllServlets(String pkg) {
     ClassPathScanningCandidateComponentProvider scanner =
-        new ClassPathScanningCandidateComponentProvider(false);
+        new ClassPathScanningCandidateComponentProvider(false) {
+          @Override
+          protected boolean isCandidateComponent(AnnotatedBeanDefinition beanDefinition) {
+            return true;
+          }
+        };
     scanner.addIncludeFilter(new AssignableTypeFilter(HttpServlet.class));
     List<Class<?>> classes = new ArrayList<>();
     for (BeanDefinition bean : scanner.findCandidateComponents(pkg)) {
-      Class<?> clazz = load(bean.getBeanClassName());
-      // endpoint servlets are top-level classes; a nested servlet in this package is a helper
-      // (e.g. a test's inner servlet on the test classpath), never a mounted endpoint
-      if (clazz.getEnclosingClass() == null) {
-        classes.add(clazz);
-      }
+      classes.add(load(bean.getBeanClassName()));
     }
     return classes;
+  }
+
+  /** Whether {@code clazz} can be resolved as a bean and mounted as an endpoint servlet. */
+  private static boolean isMountable(Class<?> clazz) {
+    return clazz.getEnclosingClass() == null && !Modifier.isAbstract(clazz.getModifiers());
   }
 
   /** Builds and validates the registry from the servlets in {@code pkg}; visible for testing. */
@@ -137,9 +186,19 @@ public final class HttpApiRegistry {
     }
     List<Entry> entries = new ArrayList<>();
     Set<String> mounts = new TreeSet<>();
-    for (Class<?> clazz : scanConcreteServlets(pkg)) {
+    for (Class<?> clazz : scanAllServlets(pkg)) {
       HttpApi api = clazz.getDeclaredAnnotation(HttpApi.class);
       HttpApiExcluded excluded = clazz.getDeclaredAnnotation(HttpApiExcluded.class);
+      if (!isMountable(clazz)) {
+        // an abstract base or a nested helper is not an endpoint; it may hold neither annotation,
+        // because declaring one would promise an endpoint that can never be mounted
+        if (api != null || excluded != null) {
+          throw new IllegalStateException(clazz.getName()
+              + " cannot be mounted and must declare neither @HttpApi nor @HttpApiExcluded:"
+              + " an endpoint servlet must be a concrete top-level class");
+        }
+        continue;
+      }
       if ((api == null) == (excluded == null)) {
         throw new IllegalStateException(clazz.getName()
             + " must declare exactly one of @HttpApi or @HttpApiExcluded");
@@ -161,7 +220,9 @@ public final class HttpApiRegistry {
   }
 
   private static Entry validate(Class<?> clazz, HttpApi api) {
-    if (clazz.getDeclaredAnnotation(Component.class) == null) {
+    // get semantics: a direct @Component or any Spring stereotype meta-annotated with it, but
+    // never one inherited from a superclass
+    if (!AnnotatedElementUtils.isAnnotated(clazz, Component.class)) {
       throw new IllegalStateException(clazz.getName() + " with @HttpApi must be a @Component bean");
     }
     String suffix = api.value();
@@ -170,6 +231,10 @@ public final class HttpApiRegistry {
     }
     if (suffix.contains("/")) {
       throw new IllegalStateException(clazz.getName() + " suffix must not contain '/': " + suffix);
+    }
+    if (!SUFFIX_PATTERN.matcher(suffix).matches()) {
+      throw new IllegalStateException(clazz.getName() + " suffix must be a single path token ("
+          + SUFFIX_SYNTAX + "), found: '" + suffix + "'");
     }
     if (api.surfaces().length == 0) {
       throw new IllegalStateException(clazz.getName() + " must declare at least one surface");

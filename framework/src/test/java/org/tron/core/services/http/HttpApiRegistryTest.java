@@ -133,6 +133,40 @@ public class HttpApiRegistryTest {
     assertBuildFails(REGTEST + "emptysurface", "at least one surface");
   }
 
+  /**
+   * A suffix is concatenated into a jetty path spec, so {@code *} would mount the servlet as a
+   * prefix wildcard swallowing every sibling endpoint under the same prefix.
+   */
+  @Test
+  public void testWildcardSuffixRejected() {
+    assertBuildFails(REGTEST + "wildcard", "single path token");
+  }
+
+  /** A suffix carrying whitespace mounts an endpoint at a path no client can request. */
+  @Test
+  public void testWhitespaceInSuffixRejected() {
+    assertBuildFails(REGTEST + "whitespace", "single path token");
+  }
+
+  /**
+   * A nested class can never be mounted, so declaring an endpoint on one must fail loudly rather
+   * than drop the endpoint silently — the omission this registry exists to prevent.
+   */
+  @Test
+  public void testNestedEndpointDeclarationRejected() {
+    assertBuildFails(REGTEST + "nested", "must be a concrete top-level class");
+  }
+
+  /** Every live suffix must satisfy the path-token rule the registry now enforces. */
+  @Test
+  public void testAllLiveSuffixesAreValidPathTokens() {
+    for (HttpApiRegistry.Entry entry : HttpApiRegistry.all()) {
+      Assert.assertTrue(
+          entry.getSuffix() + " must match " + HttpApiRegistry.SUFFIX_SYNTAX,
+          entry.getSuffix().matches(HttpApiRegistry.SUFFIX_SYNTAX));
+    }
+  }
+
   private void assertBuildFails(String pkg, String fragment) {
     try {
       HttpApiRegistry.buildFromPackage(pkg);
