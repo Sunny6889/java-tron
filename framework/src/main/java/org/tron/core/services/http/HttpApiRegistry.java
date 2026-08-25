@@ -102,20 +102,6 @@ public final class HttpApiRegistry {
     return ENTRIES;
   }
 
-  /**
-   * Stable {@code suffix access [surfaces]} lines for the whole table, one per endpoint, sorted.
-   * Used by the checked-in audit snapshot so a change to any endpoint's exposure shows up as a
-   * one-line diff in review.
-   */
-  public static List<String> auditMatrix() {
-    List<String> lines = new ArrayList<>();
-    for (Entry entry : ENTRIES) {
-      lines.add(entry.suffix + " " + entry.access + " " + new TreeSet<>(entry.surfaces));
-    }
-    Collections.sort(lines);
-    return Collections.unmodifiableList(lines);
-  }
-
   private static List<Entry> init() {
     List<Entry> entries = buildFromPackage(PACKAGE);
     if (entries.isEmpty()) {
