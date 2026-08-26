@@ -1,5 +1,6 @@
 package org.tron.core.services.interfaceOnPBFT;
 
+import io.grpc.ServerInterceptors;
 import io.grpc.netty.NettyServerBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,19 +24,21 @@ public class RpcApiServiceOnPBFT extends RpcService {
     executorName = "rpc-pbft-executor";
   }
 
+  /**
+   * Binds the PBFT cursor to the two shared services rather than to the server. A service-level
+   * interceptor lives inside the {@code ServerServiceDefinition}, so it always sits between the
+   * server-level chain and the handler regardless of registration order, and it reaches only these
+   * two services — the server-level chain (rate limiter, api access, lite-fullnode, prometheus) is
+   * left exactly as the base class builds it, and reflection is not bracketed. That last point
+   * matters here: switching to the PBFT cursor reads the head and latest-pbft block numbers, so it
+   * should not run for calls that never touch chain state.
+   */
   @Override
   protected void addService(NettyServerBuilder serverBuilder) {
-    serverBuilder.addService(rpcApiService.getDatabaseApi());
-    serverBuilder.addService(rpcApiService.getWalletSolidityApi());
-  }
-
-  @Override
-  protected void addInterceptor(NettyServerBuilder serverBuilder) {
-    // Registered first so it is innermost, wrapping the handler alone (in gRPC 1.83.0 the
-    // first-registered interceptor is closest to the handler, pinned by GrpcInterceptorProbeTest).
-    // It scopes the PBFT cursor to the data read.
-    serverBuilder.intercept(pbftCursorInterceptor);
-    super.addInterceptor(serverBuilder);
+    serverBuilder.addService(
+        ServerInterceptors.intercept(rpcApiService.getDatabaseApi(), pbftCursorInterceptor));
+    serverBuilder.addService(ServerInterceptors.intercept(
+        rpcApiService.getWalletSolidityApi(), pbftCursorInterceptor));
   }
 
 }
