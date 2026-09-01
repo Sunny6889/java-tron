@@ -365,8 +365,8 @@ public class RpcApiService extends RpcService {
 
   /**
    * WalletSolidityApi is the full implementation of the {@code protocol.WalletSolidity} gRPC
-   * service. Every method here is read-only and also present on {@link WalletApi}: this is a
-   * read-only subset of {@code WalletApi}, guarded by {@code WalletSolidityApiMethodSubsetTest}.
+   * service. Every method here is read-only and also present on {@link WalletApi}, so each one
+   * delegates to the shared {@code WalletApi} singleton instead of repeating its body.
    */
   public class WalletSolidityApi extends WalletSolidityImplBase {
 
@@ -667,8 +667,8 @@ public class RpcApiService extends RpcService {
 
   /**
    * WalletApi is the full implementation of the {@code protocol.Wallet} gRPC service, including
-   * write and build endpoints. {@link WalletSolidityApi} is the read-only subset of this surface,
-   * pinned by {@code WalletSolidityApiMethodSubsetTest}.
+   * write and build endpoints. {@link WalletSolidityApi} is the read-only subset of this surface
+   * and delegates its handlers here.
    */
   public class WalletApi extends WalletImplBase {
 

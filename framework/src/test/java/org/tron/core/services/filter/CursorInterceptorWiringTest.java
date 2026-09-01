@@ -35,7 +35,7 @@ import org.tron.core.services.interfaceOnSolidity.RpcApiServiceOnSolidity;
  * <p>Registering without the interceptor binds the {@code addService(BindableService)} overload
  * rather than the {@code addService(ServerServiceDefinition)} one, so the two are distinguishable
  * here. What the interceptor does once attached is pinned by CursorInterceptorScopeTest and
- * GrpcInterceptorProbeTest.
+ * CursorInterceptorServerTest.
  */
 public class CursorInterceptorWiringTest {
 
