@@ -17,8 +17,8 @@ import org.tron.core.db2.core.Chainbase;
  * <p>Two invariants it relies on:
  * <ul>
  * <li>The bracket wraps {@code onHalfClose()} — where gRPC runs the unary handler inline — not
- * {@code interceptCall}, which may land on another pool thread; the cursor is a {@link ThreadLocal},
- * so setting it elsewhere fails silently and the port serves HEAD.
+ * {@code interceptCall}, which may land on another pool thread; the cursor is a
+ * {@link ThreadLocal}, so setting it elsewhere fails silently and the port serves HEAD.
  * <li>Handlers must be synchronous: the cursor is reset when {@code onHalfClose} returns, so a read
  * deferred to another thread would read HEAD.
  * </ul>
