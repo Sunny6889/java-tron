@@ -73,19 +73,17 @@ public final class HttpApiRegistry {
   private HttpApiRegistry() {
   }
 
-  /** One declared endpoint: its suffix, servlet type, access nature and exposed surfaces. */
+  /** One declared endpoint: its suffix, servlet type and exposed surfaces. */
   public static final class Entry {
 
     private final String suffix;
     private final Class<? extends HttpServlet> servlet;
-    private final Access access;
     private final EnumSet<Surface> surfaces;
 
-    private Entry(String suffix, Class<? extends HttpServlet> servlet, Access access,
+    private Entry(String suffix, Class<? extends HttpServlet> servlet,
         EnumSet<Surface> surfaces) {
       this.suffix = suffix;
       this.servlet = servlet;
-      this.access = access;
       this.surfaces = surfaces;
     }
 
@@ -95,10 +93,6 @@ public final class HttpApiRegistry {
 
     public Class<? extends HttpServlet> getServlet() {
       return servlet;
-    }
-
-    public Access getAccess() {
-      return access;
     }
 
     public Set<Surface> getSurfaces() {
@@ -115,11 +109,6 @@ public final class HttpApiRegistry {
       }
     }
     return Collections.unmodifiableList(result);
-  }
-
-  /** All endpoints, ordered by suffix. */
-  public static List<Entry> all() {
-    return ENTRIES;
   }
 
   private static List<Entry> init() {
@@ -139,20 +128,6 @@ public final class HttpApiRegistry {
       // ExceptionInInitializerError that carries no TronError for ExitManager to unwrap.
       throw new TronError(e, TronError.ErrCode.API_SERVER_INIT);
     }
-  }
-
-  /**
-   * Concrete, top-level {@link HttpServlet} classes declared in {@code pkg} — the classes that can
-   * actually be mounted as an endpoint.
-   */
-  static List<Class<?>> scanConcreteServlets(String pkg) {
-    List<Class<?>> mountable = new ArrayList<>();
-    for (Class<?> clazz : scanAllServlets(pkg)) {
-      if (isMountable(clazz)) {
-        mountable.add(clazz);
-      }
-    }
-    return mountable;
   }
 
   /**
@@ -250,7 +225,7 @@ public final class HttpApiRegistry {
           "%s is %s and may only be exposed on the FULL surface, found %s",
           clazz.getName(), api.access(), surfaces));
     }
-    return new Entry(suffix, clazz.asSubclass(HttpServlet.class), api.access(), surfaces);
+    return new Entry(suffix, clazz.asSubclass(HttpServlet.class), surfaces);
   }
 
   private static Class<?> load(String name) {

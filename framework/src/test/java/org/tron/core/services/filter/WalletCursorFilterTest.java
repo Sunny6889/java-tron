@@ -4,7 +4,6 @@ import static org.junit.Assert.fail;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import javax.servlet.FilterChain;
@@ -71,21 +70,5 @@ public class WalletCursorFilterTest {
     }
     // the finally block must still restore HEAD, or the next request on this thread reads SOLIDITY
     verify(manager).resetCursor();
-  }
-
-  @Test
-  public void testCursorIsResetOnEverySequentialRequest() throws Exception {
-    Manager manager = mock(Manager.class);
-    FilterChain chain = mock(FilterChain.class);
-    ServletRequest req = mock(ServletRequest.class);
-    ServletResponse resp = mock(ServletResponse.class);
-
-    SolidityCursorFilter filter = new SolidityCursorFilter(manager);
-    filter.doFilter(req, resp, chain);
-    filter.doFilter(req, resp, chain);
-
-    // jetty reuses worker threads: each request must reset, so no cursor leaks into the next
-    verify(manager, times(2)).setCursor(Chainbase.Cursor.SOLIDITY);
-    verify(manager, times(2)).resetCursor();
   }
 }

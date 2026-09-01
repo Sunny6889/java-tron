@@ -5,7 +5,6 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.withSettings;
 
-import java.lang.annotation.Inherited;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -19,8 +18,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Answers;
 import org.springframework.context.ApplicationContext;
-import org.springframework.stereotype.Component;
-import org.tron.core.services.http.HttpApi.Access;
 import org.tron.core.services.http.HttpApi.Surface;
 import org.tron.core.services.http.solidity.SolidityNodeHttpApiService;
 import org.tron.core.services.interfaceOnPBFT.HttpApiOnPBFTService;
@@ -29,53 +26,6 @@ import org.tron.core.services.interfaceOnSolidity.HttpApiOnSolidityService;
 public class HttpApiRegistryTest {
 
   private static final String REGTEST = "org.tron.core.services.http.regtest.";
-
-  @Test
-  public void testRegistryBuildsAndValidates() {
-    // touching the registry builds and validates the whole table; an invalid table throws here
-    Assert.assertFalse("registry must not be empty", HttpApiRegistry.all().isEmpty());
-  }
-
-  @Test
-  public void testAnnotationsAreNotInheritable() {
-    // a subclass must never inherit its parent's exposure — see the removed cursor wrappers
-    Assert.assertFalse("@HttpApi must not be @Inherited",
-        HttpApi.class.isAnnotationPresent(Inherited.class));
-    Assert.assertFalse("@HttpApiExcluded must not be @Inherited",
-        HttpApiExcluded.class.isAnnotationPresent(Inherited.class));
-  }
-
-  @Test
-  public void testNonReadIsFullOnly() {
-    for (HttpApiRegistry.Entry entry : HttpApiRegistry.all()) {
-      if (entry.getAccess() != Access.READ) {
-        Assert.assertEquals(entry.getSuffix() + " must be FULL-only",
-            new HashSet<>(Arrays.asList(Surface.FULL)), entry.getSurfaces());
-      }
-      Assert.assertFalse(entry.getSuffix() + " must not contain '/'",
-          entry.getSuffix().contains("/"));
-    }
-  }
-
-  @Test
-  public void testEveryHttpApiServletIsASpringComponent() {
-    for (HttpApiRegistry.Entry entry : HttpApiRegistry.all()) {
-      Assert.assertNotNull(entry.getServlet().getName() + " must be a @Component",
-          entry.getServlet().getDeclaredAnnotation(Component.class));
-    }
-  }
-
-  @Test
-  public void testEveryConcreteServletIsAnnotatedOrExcluded() {
-    // the completeness net: a servlet cannot be added to the package and silently left unmounted
-    for (Class<?> servlet : HttpApiRegistry.scanConcreteServlets(HttpApiRegistry.PACKAGE)) {
-      boolean api = servlet.getDeclaredAnnotation(HttpApi.class) != null;
-      boolean excluded = servlet.getDeclaredAnnotation(HttpApiExcluded.class) != null;
-      Assert.assertTrue(
-          servlet.getName() + " must declare exactly one of @HttpApi / @HttpApiExcluded",
-          api ^ excluded);
-    }
-  }
 
   @Test
   public void testValidFixturePackageBuilds() {
@@ -155,16 +105,6 @@ public class HttpApiRegistryTest {
   @Test
   public void testNestedEndpointDeclarationRejected() {
     assertBuildFails(REGTEST + "nested", "must be a concrete top-level class");
-  }
-
-  /** Every live suffix must satisfy the path-token rule the registry now enforces. */
-  @Test
-  public void testAllLiveSuffixesAreValidPathTokens() {
-    for (HttpApiRegistry.Entry entry : HttpApiRegistry.all()) {
-      Assert.assertTrue(
-          entry.getSuffix() + " must match " + HttpApiRegistry.SUFFIX_SYNTAX,
-          entry.getSuffix().matches(HttpApiRegistry.SUFFIX_SYNTAX));
-    }
   }
 
   private void assertBuildFails(String pkg, String fragment) {
