@@ -24,13 +24,7 @@ public class RpcApiServiceOnSolidity extends RpcService {
     executorName = "rpc-solidity-executor";
   }
 
-  /**
-   * Binds the SOLIDITY cursor to the two shared services rather than to the server. A service-level
-   * interceptor lives inside the {@code ServerServiceDefinition}, so it always sits between the
-   * server-level chain and the handler regardless of registration order, and it reaches only these
-   * two services — the server-level chain (rate limiter, api access, lite-fullnode, prometheus) is
-   * left exactly as the base class builds it, and reflection is not bracketed.
-   */
+  /** SOLIDITY cursor bound at the service level, so it brackets only these two read services. */
   @Override
   protected void addService(NettyServerBuilder serverBuilder) {
     serverBuilder.addService(

@@ -182,7 +182,7 @@ public class RpcApiService extends RpcService {
   @Getter
   private DatabaseApi databaseApi = new DatabaseApi();
   // WalletApi is the full protocol.Wallet impl (HEAD); WalletSolidityApi is its read-only subset,
-  // reused by the Solidity/PBFT cursor ports and pinned by WalletSolidityApiMethodSubsetTest.
+  // reused by the Solidity/PBFT cursor ports.
   private WalletApi walletApi = new WalletApi();
   @Getter
   private WalletSolidityApi walletSolidityApi = new WalletSolidityApi();
