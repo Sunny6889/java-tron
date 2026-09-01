@@ -131,9 +131,12 @@ public final class HttpApiRegistry {
         throw new IllegalStateException("no http endpoints discovered in " + PACKAGE);
       }
       return entries;
-    } catch (IllegalStateException e) {
-      // the http api surface is not serviceable: take the node down through the standard exit
-      // path (logged, System.exit) instead of letting a bare error escape a static initializer
+    } catch (RuntimeException | Error e) {
+      // any failure building the table — an invariant violation (IllegalStateException), a broken
+      // classpath scan, or a servlet's own static init blowing up in Class.forName — means the
+      // http api surface is not serviceable. Route every such failure through the standard exit
+      // (logged, System.exit) rather than let it escape this static initializer as an
+      // ExceptionInInitializerError that carries no TronError for ExitManager to unwrap.
       throw new TronError(e, TronError.ErrCode.API_SERVER_INIT);
     }
   }
@@ -225,6 +228,7 @@ public final class HttpApiRegistry {
     if (!AnnotatedElementUtils.isAnnotated(clazz, Component.class)) {
       throw new IllegalStateException(clazz.getName() + " with @HttpApi must be a @Component bean");
     }
+    // validate api path suffix value
     String suffix = api.value();
     if (suffix == null || suffix.trim().isEmpty()) {
       throw new IllegalStateException(clazz.getName() + " has a blank @HttpApi suffix");
@@ -236,6 +240,7 @@ public final class HttpApiRegistry {
       throw new IllegalStateException(clazz.getName() + " suffix must be a single path token ("
           + SUFFIX_SYNTAX + "), found: '" + suffix + "'");
     }
+    // validate surface
     if (api.surfaces().length == 0) {
       throw new IllegalStateException(clazz.getName() + " must declare at least one surface");
     }
