@@ -1607,6 +1607,7 @@ public class RpcApiService extends RpcService {
             wallet.getPaginatedNowWitnessList(request.getOffset(), request.getLimit()));
       } catch (MaintenanceUnavailableException e) {
         responseObserver.onError(getRunTimeException(e));
+        return;
       }
       responseObserver.onCompleted();
     }
@@ -1636,6 +1637,7 @@ public class RpcApiService extends RpcService {
         );
       } catch (Exception e) {
         responseObserver.onError(getRunTimeException(e));
+        return;
       }
       responseObserver.onCompleted();
     }
@@ -1648,6 +1650,7 @@ public class RpcApiService extends RpcService {
           .onNext(wallet.getDelegatedResourceAccountIndex(request.getValue()));
       } catch (Exception e) {
         responseObserver.onError(getRunTimeException(e));
+        return;
       }
       responseObserver.onCompleted();
     }
@@ -1660,6 +1663,7 @@ public class RpcApiService extends RpcService {
                 .onNext(wallet.getDelegatedResourceAccountIndexV2(request.getValue()));
       } catch (Exception e) {
         responseObserver.onError(getRunTimeException(e));
+        return;
       }
       responseObserver.onCompleted();
     }
@@ -1672,6 +1676,7 @@ public class RpcApiService extends RpcService {
                         request.getOwnerAddress(), request.getType()));
       } catch (Exception e) {
         responseObserver.onError(getRunTimeException(e));
+        return;
       }
 
       responseObserver.onCompleted();
@@ -1685,6 +1690,7 @@ public class RpcApiService extends RpcService {
                 request.getOwnerAddress()));
       } catch (Exception e) {
         responseObserver.onError(getRunTimeException(e));
+        return;
       }
 
       responseObserver.onCompleted();
@@ -1700,6 +1706,7 @@ public class RpcApiService extends RpcService {
         ));
       } catch (Exception e) {
         responseObserver.onError(getRunTimeException(e));
+        return;
       }
       responseObserver.onCompleted();
     }
@@ -1711,6 +1718,7 @@ public class RpcApiService extends RpcService {
         responseObserver.onNext(wallet.getBandwidthPrices());
       } catch (Exception e) {
         responseObserver.onError(getRunTimeException(e));
+        return;
       }
       responseObserver.onCompleted();
     }
@@ -1722,6 +1730,7 @@ public class RpcApiService extends RpcService {
         responseObserver.onNext(wallet.getEnergyPrices());
       } catch (Exception e) {
         responseObserver.onError(getRunTimeException(e));
+        return;
       }
       responseObserver.onCompleted();
     }
@@ -1733,6 +1742,7 @@ public class RpcApiService extends RpcService {
         responseObserver.onNext(wallet.getMemoFeePrices());
       } catch (Exception e) {
         responseObserver.onError(getRunTimeException(e));
+        return;
       }
       responseObserver.onCompleted();
     }
@@ -1789,6 +1799,7 @@ public class RpcApiService extends RpcService {
         responseObserver.onNext(nodeInfoService.getNodeInfo().transferToProtoEntity());
       } catch (Exception e) {
         responseObserver.onError(getRunTimeException(e));
+        return;
       }
       responseObserver.onCompleted();
     }
@@ -2265,6 +2276,7 @@ public class RpcApiService extends RpcService {
         responseObserver.onNext(wallet.getTransactionInfoByBlockNum(request.getNum()));
       } catch (Exception e) {
         responseObserver.onError(getRunTimeException(e));
+        return;
       }
 
       responseObserver.onCompleted();
@@ -2294,6 +2306,7 @@ public class RpcApiService extends RpcService {
         responseObserver.onNext(marketOrderList);
       } catch (Exception e) {
         responseObserver.onError(getRunTimeException(e));
+        return;
       }
       responseObserver.onCompleted();
     }
@@ -2309,6 +2322,7 @@ public class RpcApiService extends RpcService {
         responseObserver.onNext(marketOrder);
       } catch (Exception e) {
         responseObserver.onError(getRunTimeException(e));
+        return;
       }
       responseObserver.onCompleted();
     }
@@ -2323,6 +2337,7 @@ public class RpcApiService extends RpcService {
         responseObserver.onNext(marketPriceList);
       } catch (Exception e) {
         responseObserver.onError(getRunTimeException(e));
+        return;
       }
       responseObserver.onCompleted();
     }
@@ -2337,6 +2352,7 @@ public class RpcApiService extends RpcService {
         responseObserver.onNext(orderPairList);
       } catch (Exception e) {
         responseObserver.onError(getRunTimeException(e));
+        return;
       }
       responseObserver.onCompleted();
     }
@@ -2349,6 +2365,7 @@ public class RpcApiService extends RpcService {
         responseObserver.onNext(pairList);
       } catch (Exception e) {
         responseObserver.onError(getRunTimeException(e));
+        return;
       }
       responseObserver.onCompleted();
     }
@@ -2398,6 +2415,7 @@ public class RpcApiService extends RpcService {
       responseObserver.onNext(builder.build());
     } catch (Exception e) {
       responseObserver.onError(e);
+      return;
     }
     responseObserver.onCompleted();
   }
@@ -2411,6 +2429,7 @@ public class RpcApiService extends RpcService {
       responseObserver.onNext(builder.build());
     } catch (Exception e) {
       responseObserver.onError(e);
+      return;
     }
     responseObserver.onCompleted();
   }
@@ -2426,6 +2445,7 @@ public class RpcApiService extends RpcService {
       responseObserver.onNext(builder.build());
     } catch (Exception e) {
       responseObserver.onError(e);
+      return;
     }
     responseObserver.onCompleted();
   }
@@ -2452,6 +2472,7 @@ public class RpcApiService extends RpcService {
       responseObserver.onNext(transactionCapsule == null ? null : transactionCapsule.getInstance());
     } catch (Exception e) {
       responseObserver.onError(e);
+      return;
     }
     responseObserver.onCompleted();
   }
@@ -2464,6 +2485,7 @@ public class RpcApiService extends RpcService {
       responseObserver.onNext(builder.build());
     } catch (Exception e) {
       responseObserver.onError(e);
+      return;
     }
     responseObserver.onCompleted();
   }
@@ -2476,6 +2498,7 @@ public class RpcApiService extends RpcService {
       responseObserver.onNext(builder.build());
     } catch (Exception e) {
       responseObserver.onError(e);
+      return;
     }
     responseObserver.onCompleted();
   }
@@ -2491,6 +2514,7 @@ public class RpcApiService extends RpcService {
       } else {
         responseObserver.onError(getRunTimeException(e));
       }
+      return;
     }
     responseObserver.onCompleted();
   }
